@@ -43,6 +43,8 @@ repositories {
         }
     }
     mavenCentral()
+    jcenter()
+    maven("https://dl.bintray.com/kotlin/ktor")
 }
 
 tasks.withType<Test> {
