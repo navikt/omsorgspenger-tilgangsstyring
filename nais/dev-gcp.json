@@ -1,0 +1,12 @@
+{
+  "app": "omsorgspenger-tilgangsstyring",
+  "cluster": "dev-gcp",
+  "namespace": "omsorgspenger",
+  "team": "omsorgspenger",
+  "minReplicas": "1",
+  "maxReplicas": "1",
+  "azureTenant": "trygdeetaten.no",
+  "ingresses": [
+    "https://omsorgspenger-tilgangsstyring.dev.intern.nav.no"
+  ]
+}
