@@ -3,6 +3,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 val ktorVersion = "1.4.1"
 val dusseldorfVersion = "1.4.1.4754df6"
 
+val junitJupiterVersion = "5.7.0"
+val assertJVersion = "3.18.0"
+
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
@@ -18,6 +21,15 @@ dependencies {
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("no.nav.helse:dusseldorf-ktor-auth:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-core:$dusseldorfVersion")
+
+    // Test
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
+        exclude(group = "org.eclipse.jetty")
+    }
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
+    testImplementation ("org.assertj:assertj-core:$assertJVersion")
 }
 
 repositories {
