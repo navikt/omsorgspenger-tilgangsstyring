@@ -6,6 +6,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
+import no.nav.helse.dusseldorf.testsupport.jws.Azure
 import no.nav.omsorgspenger.testutils.TestApplicationExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
@@ -21,11 +22,12 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader("Authorization", "Bearer ${gyldigToken()}")
                 @Language("JSON")
                 val jsonBody = """
                     {
                       "identitetsnumre": ["01010101011", "12312312312"],
-                      "operasjon": "Visning"
+                      "operasjon": "${Operasjon.Visning}"
                     }
                 """.trimIndent()
                 setBody(jsonBody)
@@ -40,10 +42,49 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader("Authorization", "Bearer ${gyldigToken()}")
                 setBody("{}")
             }.apply {
                 assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
             }
         }
     }
+
+    @Test
+    internal fun `Gir 401 dersom token ikke er satt`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.Unauthorized)
+            }
+        }
+    }
+
+    @Test
+    internal fun `Gir 401 dersom token ikke er utstedt til en personbruker`() {
+        val tokenUtenPersonbrukerClaims = Azure.V2_0.generateJwt(
+            clientId = "any",
+            clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,
+            audience = "any"
+        )
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader("Authorization", "Bearer $tokenUtenPersonbrukerClaims")
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.Unauthorized)
+            }
+        }
+    }
 }
+
+internal fun gyldigToken() = Azure.V2_0.generateJwt(
+    clientId = "any",
+    clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,
+    audience = "any",
+    overridingClaims = mapOf(
+        "oid" to "any",
+        "preferred_username" to "any"
+    )
+)
