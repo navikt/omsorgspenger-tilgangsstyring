@@ -23,9 +23,10 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
         }
 
         try {
-            val (identitetsnumre, operasjon) = call.receive<PersonerRequestBody>()
+            val (identitetsnumre) = call.receive<PersonerRequestBody>()
 
-            when (personTilgangService.sjekkTilgang(identitetsnumre, operasjon)) {
+            // TODO: correlationId
+            when (personTilgangService.sjekkTilgang(identitetsnumre, "TODO", jwt.toString())) {
                 true -> call.respond(HttpStatusCode.NoContent)
                 false -> call.respond(HttpStatusCode.Forbidden)
             }

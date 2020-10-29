@@ -11,6 +11,8 @@
   ],
   "env": {
     "AZURE_V2_JWKS_URI": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/discovery/v2.0/keys",
-    "AZURE_V2_ISSUER": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0"
+    "AZURE_V2_ISSUER": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0",
+    "STS_TOKEN_URL": "https://api-gw-q1.oera.no/security-token-service/rest/v1/sts/token",
+    "PDL_BASE_URL": "https://api-gw-q1.oera.no/pdl-api/graphql"
   }
 }

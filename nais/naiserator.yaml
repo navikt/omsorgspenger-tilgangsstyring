@@ -44,3 +44,11 @@ spec:
     cpuThresholdPercentage: 90
   secureLogs:
     enabled: true
+  envFrom:
+    - secret: omsorgspenger-tilgangsstyring-apigwkeys
+    - secret: omsorgspenger-tilgangsstyring-srvusercredentials
+  env:
+  {{#each env}}
+    - name: {{@key}}
+      value: {{this}}
+  {{/each}}

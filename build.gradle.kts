@@ -19,8 +19,10 @@ buildscript {
 
 dependencies {
     implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("no.nav.helse:dusseldorf-ktor-auth:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-core:$dusseldorfVersion")
+    implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfVersion")
 
     // Test
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
