@@ -37,7 +37,7 @@ internal class StsRestClient(
 
     private suspend fun fetchToken(): Token {
         return kotlin.runCatching {
-            httpClient.get<HttpStatement>(stsTokenUrl) {
+            httpClient.get<HttpStatement>("$stsTokenUrl?grant_type=client_credentials&scope=openid") {
                 header(HttpHeaders.Authorization, serviceUser.basicAuth)
                 header("x-nav-apiKey", stsApiGwKey)
                 accept(ContentType.Application.Json)
