@@ -10,25 +10,35 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
+import org.slf4j.LoggerFactory
 
 internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) {
+
+    val logger = LoggerFactory.getLogger("no.nav.omsorgspenger.person.PersonTilgangApi")
+
     post("/api/tilgang/personer") {
         val jwt = call.principal<JWTPrincipal>().also {
             if (it == null) {
                 return@post call.respond(HttpStatusCode.Unauthorized)
             }
         }
+
         if (!jwt!!.erPersonbruker()) {
-            return@post call.respond(HttpStatusCode.Unauthorized)
+            logger.warn("personer-api ble kalt fra et system og ikke en personbruker. System-id: ${jwt.payload.claims["azp"]}")
+            return@post call.respond(HttpStatusCode.Forbidden)
         }
 
         try {
-            val (identitetsnumre) = call.receive<PersonerRequestBody>()
+            val (identitetsnummer, operasjon, beskrivelse) = call.receive<PersonerRequestBody>()
 
             // TODO: correlationId
-            when (personTilgangService.sjekkTilgang(identitetsnumre, "TODO", jwt.toString())) {
+            when (personTilgangService.sjekkTilgang(identitetsnummer, "TODO", jwt.toString())) {
                 true -> call.respond(HttpStatusCode.NoContent)
-                false -> call.respond(HttpStatusCode.Forbidden)
+                false -> {
+                    val username = jwt.payload.claims["preferred_username"]
+                    logger.info("Personen $username forsøkte å $beskrivelse ($operasjon), men fikk avslag")
+                    call.respond(HttpStatusCode.Forbidden)
+                }
             }
             // TODO: bake dette inn i alle apikall
         } catch (ex: Throwable) {

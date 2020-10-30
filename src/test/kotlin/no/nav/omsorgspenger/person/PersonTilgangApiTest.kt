@@ -26,8 +26,9 @@ internal class PersonTilgangApiTest(
                 @Language("JSON")
                 val jsonBody = """
                     {
-                      "identitetsnumre": ["01010101011", "12312312312"],
-                      "operasjon": "${Operasjon.Visning}"
+                      "identitetsnummer": ["01010101011", "12312312312"],
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp saksnummer"
                     }
                 """.trimIndent()
                 setBody(jsonBody)
@@ -62,7 +63,7 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Gir 401 dersom token ikke er utstedt til en personbruker`() {
+    internal fun `Gir 403 dersom token ikke er utstedt til en personbruker`() {
         val tokenUtenPersonbrukerClaims = Azure.V2_0.generateJwt(
             clientId = "any",
             clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,
@@ -73,7 +74,7 @@ internal class PersonTilgangApiTest(
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader("Authorization", "Bearer $tokenUtenPersonbrukerClaims")
             }.apply {
-                assertThat(response.status()).isEqualTo(HttpStatusCode.Unauthorized)
+                assertThat(response.status()).isEqualTo(HttpStatusCode.Forbidden)
             }
         }
     }
