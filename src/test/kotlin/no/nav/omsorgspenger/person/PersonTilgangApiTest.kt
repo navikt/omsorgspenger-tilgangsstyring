@@ -9,7 +9,6 @@ import io.ktor.server.testing.setBody
 import no.nav.helse.dusseldorf.testsupport.jws.Azure
 import no.nav.omsorgspenger.testutils.TestApplicationExtension
 import no.nav.omsorgspenger.testutils.mocks.identSomGirTilgang_1
-import no.nav.omsorgspenger.testutils.mocks.identSomGirTilgang_2
 import no.nav.omsorgspenger.testutils.mocks.identSomGirUnauthorised
 import no.nav.omsorgspenger.testutils.mocks.identSomIkkeFinnes
 import no.nav.omsorgspenger.testutils.mocks.identSomKasterServerError
@@ -23,7 +22,7 @@ internal class PersonTilgangApiTest(
     private val testApplicationEngine: TestApplicationEngine
 ) {
     @Test
-    internal fun `Gir 204 ved oppgitt identitetsnumre og operasjon`() {
+    internal fun `Gir 204 ved oppgitt identitetsnummer og operasjon`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
@@ -31,7 +30,7 @@ internal class PersonTilgangApiTest(
                 @Language("JSON")
                 val jsonBody = """
                     {
-                      "identitetsnummer": ["$identSomGirTilgang_1", "$identSomGirTilgang_2"],
+                      "identitetsnummer": ["$identSomGirTilgang_1"],
                       "operasjon": "${Operasjon.Visning}",
                       "beskrivelse": "slå opp saksnummer"
                     }

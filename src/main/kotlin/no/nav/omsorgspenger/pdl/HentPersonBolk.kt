@@ -1,8 +1,13 @@
 package no.nav.omsorgspenger.pdl
 
-data class HentPdlResponse(val data: HentPersonBolkInfo?, val errors: List<PdlError>?)
-// TODO: trengs egentlig data? trenger bare eventuelle errors
-data class HentPersonBolkInfo(val hentPersonBolk: List<PersonBolk>?, val hentIdenterBolk: List<IdenterBolk>?)
+data class HentPersonBolkResponse(
+    val data: HentPersonBolkInfo?,
+    val errors: List<PdlError>?
+)
+data class HentPersonBolkInfo(
+    val hentPersonBolk: List<PersonBolk>?,
+    val hentIdenterBolk: List<IdenterBolk>?
+)
 
 data class PersonBolk(
     val ident: String,

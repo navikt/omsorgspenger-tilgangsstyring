@@ -15,7 +15,7 @@ internal class PersonTilgangService(
     private val logger = LoggerFactory.getLogger(PersonTilgangService::class.java)
 
     internal suspend fun sjekkTilgang(identitetsnummer: List<String>, correlationId: String, authHeader: String): Boolean {
-        val (data, errors) = pdlClient.hentInfoOmPersoner(identitetsnummer.toSet(), correlationId, authHeader)
+        val errors = pdlClient.hentInfoOmPersoner(identitetsnummer.toSet(), correlationId, authHeader).errors
         when (errors?.size) {
             null, 0 -> Unit
             else -> {

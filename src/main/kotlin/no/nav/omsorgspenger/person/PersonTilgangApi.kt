@@ -48,6 +48,7 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
             when (ex) {
                 is MismatchedInputException,
                 is MissingKotlinParameterException -> {
+                    logger.error("Mapping exception", ex)
                     call.respond(HttpStatusCode.BadRequest, ex.localizedMessage)
                 }
                 else -> call.respond(HttpStatusCode.InternalServerError, ex.localizedMessage)

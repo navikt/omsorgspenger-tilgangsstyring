@@ -24,7 +24,7 @@ internal class PdlClient(
     private val httpClient: HttpClient
 ) : HealthCheck {
 
-    suspend fun hentInfoOmPersoner(identer: Set<String>, correlationId: String, authHeader: String): HentPdlResponse {
+    suspend fun hentInfoOmPersoner(identer: Set<String>, correlationId: String, authHeader: String): HentPersonResponse {
         return httpClient.post<HttpStatement>(pdlBaseUrl) {
             header(HttpHeaders.Authorization, authHeader)
             header("Nav-Consumer-Token", "Bearer ${stsRestClient.token()}")
@@ -34,7 +34,8 @@ internal class PdlClient(
             header("x-nav-apiKey", pdlApiKey)
             accept(ContentType.Application.Json)
             contentType(ContentType.Application.Json)
-            body = hentPersonInfoQuery(identer)
+            // TODO: Gjøre oppslag på hver ident (PDL støtter ikke at saksbehandler bruker bolk-oppslag)
+            body = hentPersonInfoQuery(identer.first())
         }.receive()
     }
 

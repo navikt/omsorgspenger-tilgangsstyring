@@ -167,7 +167,7 @@ private fun WireMockServer.stubPdlApiServerErrorResponse(): WireMockServer {
     return this
 }
 
-internal fun WireMockServer.stubPdlApi() = stubPdlApiHentPersonWithError(Unauthorised, identSomGirUnauthorised)
+internal fun WireMockServer.stubPdlApiBolk() = stubPdlApiHentPersonWithError(Unauthorised, identSomGirUnauthorised)
     .stubPdlApiHentPersonWithError(NotFound, identSomIkkeFinnes)
     .stubPdlApiHentPersonWithError(ServerError, identSomKasterServerError)
     .stubPdlApiHentPersonBolk()
