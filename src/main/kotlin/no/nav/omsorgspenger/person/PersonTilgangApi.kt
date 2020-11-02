@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import io.ktor.application.call
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.principal
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
@@ -28,11 +29,13 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
             return@post call.respond(HttpStatusCode.Forbidden)
         }
 
+        val authHeader = call.request.headers[HttpHeaders.Authorization]!!
+
         try {
             val (identitetsnummer, operasjon, beskrivelse) = call.receive<PersonerRequestBody>()
 
             // TODO: correlationId
-            when (personTilgangService.sjekkTilgang(identitetsnummer, "TODO", jwt.toString())) {
+            when (personTilgangService.sjekkTilgang(identitetsnummer, "TODO", authHeader)) {
                 true -> call.respond(HttpStatusCode.NoContent)
                 false -> {
                     val username = jwt.payload.claims["preferred_username"]
@@ -47,7 +50,7 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
                 is MissingKotlinParameterException -> {
                     call.respond(HttpStatusCode.BadRequest, ex.localizedMessage)
                 }
-                else -> throw ex
+                else -> call.respond(HttpStatusCode.InternalServerError, ex.localizedMessage)
             }
         }
     }

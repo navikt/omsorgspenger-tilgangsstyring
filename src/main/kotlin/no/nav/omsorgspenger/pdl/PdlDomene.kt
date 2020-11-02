@@ -31,6 +31,12 @@ data class PdlErrorExtension(
     val classification: String
 )
 
+const val Unauthenticated = "unauthenticated"
+const val Unauthorised = "unauthorized"
+const val NotFound = "not_found"
+const val BadRequest = "bad_request"
+const val ServerError = "server_error"
+
 fun hentPersonInfoQuery(fnr: Set<String>): PersonInfoGraphqlQuery {
     val query = GraphqlQuery::class.java.getResource("/pdl/hentPersonBolkInfo.graphql").readText().replace("[\n\r]", "")
     return PersonInfoGraphqlQuery(query, Variables(fnr.toList()))

@@ -8,6 +8,11 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import no.nav.helse.dusseldorf.testsupport.jws.Azure
 import no.nav.omsorgspenger.testutils.TestApplicationExtension
+import no.nav.omsorgspenger.testutils.mocks.identSomGirTilgang_1
+import no.nav.omsorgspenger.testutils.mocks.identSomGirTilgang_2
+import no.nav.omsorgspenger.testutils.mocks.identSomGirUnauthorised
+import no.nav.omsorgspenger.testutils.mocks.identSomIkkeFinnes
+import no.nav.omsorgspenger.testutils.mocks.identSomKasterServerError
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
@@ -26,7 +31,7 @@ internal class PersonTilgangApiTest(
                 @Language("JSON")
                 val jsonBody = """
                     {
-                      "identitetsnummer": ["01010101011", "12312312312"],
+                      "identitetsnummer": ["$identSomGirTilgang_1", "$identSomGirTilgang_2"],
                       "operasjon": "${Operasjon.Visning}",
                       "beskrivelse": "slå opp saksnummer"
                     }
@@ -75,6 +80,69 @@ internal class PersonTilgangApiTest(
                 addHeader("Authorization", "Bearer $tokenUtenPersonbrukerClaims")
             }.apply {
                 assertThat(response.status()).isEqualTo(HttpStatusCode.Forbidden)
+            }
+        }
+    }
+
+    @Test
+    internal fun `Gir 403 dersom ikke tilgang til person`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                @Language("JSON")
+                val jsonBody = """
+                    {
+                      "identitetsnummer": ["$identSomGirUnauthorised"],
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp rammemeldinger"
+                    }
+                """.trimIndent()
+                setBody(jsonBody)
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.Forbidden)
+            }
+        }
+    }
+
+    @Test
+    internal fun `Gir tilgang dersom person ikke finnes`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                @Language("JSON")
+                val jsonBody = """
+                    {
+                      "identitetsnummer": ["$identSomIkkeFinnes"],
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp rammemeldinger"
+                    }
+                """.trimIndent()
+                setBody(jsonBody)
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.NoContent)
+            }
+        }
+    }
+
+    @Test
+    internal fun `Kaster feil dersom server_error i PDL response error object`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                @Language("JSON")
+                val jsonBody = """
+                    {
+                      "identitetsnummer": ["$identSomKasterServerError"],
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp rammemeldinger"
+                    }
+                """.trimIndent()
+                setBody(jsonBody)
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.InternalServerError)
             }
         }
     }

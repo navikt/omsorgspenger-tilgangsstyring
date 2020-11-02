@@ -24,9 +24,9 @@ internal class PdlClient(
     private val httpClient: HttpClient
 ) : HealthCheck {
 
-    suspend fun hentInfoOmPersoner(identer: Set<String>, correlationId: String, jwt: String): HentPdlResponse {
+    suspend fun hentInfoOmPersoner(identer: Set<String>, correlationId: String, authHeader: String): HentPdlResponse {
         return httpClient.post<HttpStatement>(pdlBaseUrl) {
-            header(HttpHeaders.Authorization, "Bearer $jwt")
+            header(HttpHeaders.Authorization, authHeader)
             header("Nav-Consumer-Token", "Bearer ${stsRestClient.token()}")
             header("Nav-Consumer-Id", serviceUser.username)
             header("Nav-Call-Id", correlationId)

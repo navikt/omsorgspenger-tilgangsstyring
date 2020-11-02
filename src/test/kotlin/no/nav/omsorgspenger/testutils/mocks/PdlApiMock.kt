@@ -6,9 +6,18 @@ import com.github.tomakehurst.wiremock.client.WireMock.containing
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
+import no.nav.omsorgspenger.pdl.NotFound
+import no.nav.omsorgspenger.pdl.ServerError
+import no.nav.omsorgspenger.pdl.Unauthorised
 
 private const val pdlApiBasePath = "/pdlapi-mock"
 private const val pdlApiMockPath = "/"
+
+const val identSomGirTilgang_1 = "01010101011"
+const val identSomGirTilgang_2 = "12312312312"
+const val identSomGirUnauthorised = "40340340340"
+const val identSomKasterServerError = "7465843644"
+const val identSomIkkeFinnes = "77777777777"
 
 private fun WireMockServer.stubPdlApiHentPersonBolk(): WireMockServer {
     WireMock.stubFor(
@@ -20,8 +29,8 @@ private fun WireMockServer.stubPdlApiHentPersonBolk(): WireMockServer {
             .withHeader("Content-Type", equalTo("application/json"))
             .withHeader("Nav-Consumer-Token", AnythingPattern())
             .withHeader("x-nav-apiKey", AnythingPattern())
-            .withRequestBody(matchingJsonPath("$.variables.identer", containing("01010101011")))
-            .withRequestBody(matchingJsonPath("$.variables.identer", containing("12312312312")))
+            .withRequestBody(matchingJsonPath("$.variables.identer", containing(identSomGirTilgang_1)))
+            .withRequestBody(matchingJsonPath("$.variables.identer", containing(identSomGirTilgang_2)))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)
@@ -92,7 +101,7 @@ private fun WireMockServer.stubPdlApiHentPersonBolk(): WireMockServer {
     return this
 }
 
-private fun WireMockServer.stubPdlApiHentPersonError(): WireMockServer {
+private fun WireMockServer.stubPdlApiHentPersonWithError(error: String, identitetsnummer: String): WireMockServer {
     WireMock.stubFor(
         WireMock.post(
             WireMock
@@ -102,7 +111,7 @@ private fun WireMockServer.stubPdlApiHentPersonError(): WireMockServer {
             .withHeader("Content-Type", equalTo("application/json"))
             .withHeader("Nav-Consumer-Token", AnythingPattern())
             .withHeader("x-nav-apiKey", AnythingPattern())
-            .withRequestBody(matchingJsonPath("$.variables.identer", containing("404")))
+            .withRequestBody(matchingJsonPath("$.variables.identer", containing(identitetsnummer)))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)
@@ -123,15 +132,12 @@ private fun WireMockServer.stubPdlApiHentPersonError(): WireMockServer {
                                     "hentPerson"
                                   ],
                                   "extensions": {
-                                    "code": "unauthorized",
+                                    "code": "$error",
                                     "classification": "ExecutionAborted"
                                   }
                                 }
                               ],
-                              "data": {
-                                "hentPersonBolk": null,
-                                "hentIdenterBolk": null
-                              }
+                              "data": null
                             }
                         """.trimIndent()
                     )
@@ -161,7 +167,9 @@ private fun WireMockServer.stubPdlApiServerErrorResponse(): WireMockServer {
     return this
 }
 
-internal fun WireMockServer.stubPdlApi() = stubPdlApiHentPersonError()
+internal fun WireMockServer.stubPdlApi() = stubPdlApiHentPersonWithError(Unauthorised, identSomGirUnauthorised)
+    .stubPdlApiHentPersonWithError(NotFound, identSomIkkeFinnes)
+    .stubPdlApiHentPersonWithError(ServerError, identSomKasterServerError)
     .stubPdlApiHentPersonBolk()
     .stubPdlApiServerErrorResponse()
 
