@@ -11,6 +11,7 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
+import no.nav.omsorgspenger.secureLog
 import org.slf4j.LoggerFactory
 
 internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) {
@@ -34,12 +35,17 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
         try {
             val (identitetsnummer, operasjon, beskrivelse) = call.receive<PersonerRequestBody>()
 
+            val username = jwt.payload.claims["preferred_username"]
+            val logMessage = "Personen $username ønsker å $beskrivelse ($operasjon) for personidenter $identitetsnummer"
+
             // TODO: correlationId
             when (personTilgangService.sjekkTilgang(identitetsnummer, "TODO", authHeader)) {
-                true -> call.respond(HttpStatusCode.NoContent)
+                true -> {
+                    secureLog("Innvilget: $logMessage")
+                    call.respond(HttpStatusCode.NoContent)
+                }
                 false -> {
-                    val username = jwt.payload.claims["preferred_username"]
-                    logger.info("Personen $username forsøkte å $beskrivelse ($operasjon), men fikk avslag")
+                    secureLog("Avslått: $logMessage")
                     call.respond(HttpStatusCode.Forbidden)
                 }
             }
