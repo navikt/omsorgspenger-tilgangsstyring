@@ -50,7 +50,7 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
         )
 
         val username = jwt.payload.claims["preferred_username"]?.asString()
-        val logMessage = "Personen $username ønsker å $beskrivelse ($operasjon) for personidenter $identitetsnummer"
+        val logMessage = "Personen $username ønsker å $beskrivelse ($operasjon) for identitetsnummer $identitetsnummer"
 
         // TODO: correlationId
         when (personTilgangService.sjekkTilgang(identitetsnummer, "TODO", authHeader)) {
