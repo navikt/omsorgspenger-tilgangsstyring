@@ -26,7 +26,8 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
         }
 
         if (!jwt!!.erPersonbruker()) {
-            logger.warn("personer-api ble kalt fra et system og ikke en personbruker. System-id: ${jwt.payload.claims["azp"]}")
+            val systemId = jwt.payload.claims["azp"]?.asString()
+            logger.warn("personer-api ble kalt fra et system og ikke en personbruker. System-id: $systemId")
             return@post call.respond(HttpStatusCode.Forbidden)
         }
 
@@ -35,7 +36,7 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
         try {
             val (identitetsnummer, operasjon, beskrivelse) = call.receive<PersonerRequestBody>()
 
-            val username = jwt.payload.claims["preferred_username"]
+            val username = jwt.payload.claims["preferred_username"]?.asString()
             val logMessage = "Personen $username ønsker å $beskrivelse ($operasjon) for personidenter $identitetsnummer"
 
             // TODO: correlationId

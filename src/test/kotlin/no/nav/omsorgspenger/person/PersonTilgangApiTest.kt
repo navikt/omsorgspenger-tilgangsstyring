@@ -71,7 +71,10 @@ internal class PersonTilgangApiTest(
         val tokenUtenPersonbrukerClaims = Azure.V2_0.generateJwt(
             clientId = "any",
             clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,
-            audience = "any"
+            audience = "any",
+            overridingClaims = mapOf(
+                "azp" to "systembruker"
+            )
         )
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
@@ -153,6 +156,6 @@ internal fun gyldigToken() = Azure.V2_0.generateJwt(
     audience = "any",
     overridingClaims = mapOf(
         "oid" to "any",
-        "preferred_username" to "any"
+        "preferred_username" to "Test Brukersen"
     )
 )
