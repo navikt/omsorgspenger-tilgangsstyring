@@ -11,14 +11,17 @@ import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.StatusPages
 import io.ktor.jackson.jackson
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.dusseldorf.ktor.auth.AuthStatusPages
 import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.issuers
 import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.auth.withoutAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
+import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
 import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.pdl.PdlClient
 import no.nav.omsorgspenger.person.PersonTilgangApi
@@ -36,6 +39,11 @@ fun Application.app() {
 
     install(Authentication) {
         multipleJwtIssuers(issuers)
+    }
+
+    install(StatusPages) {
+        DefaultStatusPages()
+        AuthStatusPages()
     }
 
     val objectMapper: ObjectMapper = jacksonObjectMapper()

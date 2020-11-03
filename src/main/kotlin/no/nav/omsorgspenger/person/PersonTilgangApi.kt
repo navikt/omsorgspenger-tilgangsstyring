@@ -33,36 +33,38 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
 
         val authHeader = call.request.headers[HttpHeaders.Authorization]!!
 
-        try {
-            val (identitetsnummer, operasjon, beskrivelse) = call.receive<PersonerRequestBody>()
-
-            val username = jwt.payload.claims["preferred_username"]?.asString()
-            val logMessage = "Personen $username ønsker å $beskrivelse ($operasjon) for personidenter $identitetsnummer"
-
-            // TODO: correlationId
-            when (personTilgangService.sjekkTilgang(identitetsnummer, "TODO", authHeader)) {
-                true -> {
-                    secureLog("Innvilget: $logMessage")
-                    call.respond(HttpStatusCode.NoContent)
-                }
-                false -> {
-                    secureLog("Avslått: $logMessage")
-                    call.respond(HttpStatusCode.Forbidden)
+        val (identitetsnummer, operasjon, beskrivelse) = kotlin.runCatching {
+            call.receive<PersonerRequestBody>()
+        }.fold(
+            onSuccess = { requestBody -> requestBody },
+            onFailure = { ex ->
+                when (ex) {
+                    is MismatchedInputException,
+                    is MissingKotlinParameterException -> {
+                        logger.error("Mapping exception", ex)
+                        return@post call.respond(HttpStatusCode.BadRequest, ex.localizedMessage)
+                    }
+                    else -> throw ex
                 }
             }
-            // TODO: bake dette inn i alle apikall
-        } catch (ex: Throwable) {
-            when (ex) {
-                is MismatchedInputException,
-                is MissingKotlinParameterException -> {
-                    logger.error("Mapping exception", ex)
-                    call.respond(HttpStatusCode.BadRequest, ex.localizedMessage)
-                }
-                else -> call.respond(HttpStatusCode.InternalServerError, ex.localizedMessage)
+        )
+
+        val username = jwt.payload.claims["preferred_username"]?.asString()
+        val logMessage = "Personen $username ønsker å $beskrivelse ($operasjon) for personidenter $identitetsnummer"
+
+        // TODO: correlationId
+        when (personTilgangService.sjekkTilgang(identitetsnummer, "TODO", authHeader)) {
+            true -> {
+                secureLog("Innvilget: $logMessage")
+                call.respond(HttpStatusCode.NoContent)
+            }
+            false -> {
+                secureLog("Avslått: $logMessage")
+                call.respond(HttpStatusCode.Forbidden)
             }
         }
     }
 }
 
-internal fun JWTPrincipal.erPersonbruker() =
+private fun JWTPrincipal.erPersonbruker() =
     this.payload.claims.contains("oid") && this.payload.claims.contains("preferred_username")
