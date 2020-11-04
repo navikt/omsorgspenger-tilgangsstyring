@@ -10,6 +10,7 @@ import io.ktor.auth.authenticate
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.features.CallId
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
 import io.ktor.jackson.jackson
@@ -22,6 +23,7 @@ import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.auth.withoutAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
 import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
+import no.nav.helse.dusseldorf.ktor.core.fromXCorrelationIdHeader
 import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.pdl.PdlClient
 import no.nav.omsorgspenger.person.PersonTilgangApi
@@ -44,6 +46,12 @@ fun Application.app() {
     install(StatusPages) {
         DefaultStatusPages()
         AuthStatusPages()
+    }
+
+    install(CallId) {
+        fromXCorrelationIdHeader(
+            generateOnInvalid = true
+        )
     }
 
     val objectMapper: ObjectMapper = jacksonObjectMapper()

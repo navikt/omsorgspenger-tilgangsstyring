@@ -26,6 +26,7 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.XCorrelationId, "id")
                 addHeader("Authorization", "Bearer ${gyldigToken()}")
                 @Language("JSON")
                 val jsonBody = """
@@ -92,6 +93,7 @@ internal class PersonTilgangApiTest(
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader(HttpHeaders.XCorrelationId, "id")
                 @Language("JSON")
                 val jsonBody = """
                     {
@@ -113,6 +115,7 @@ internal class PersonTilgangApiTest(
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader(HttpHeaders.XCorrelationId, "id")
                 @Language("JSON")
                 val jsonBody = """
                     {

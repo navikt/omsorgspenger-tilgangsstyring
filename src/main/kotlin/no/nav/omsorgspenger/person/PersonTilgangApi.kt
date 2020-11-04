@@ -51,9 +51,9 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
 
         val username = jwt.payload.claims["preferred_username"]?.asString()
         val logMessage = "Personen $username ønsker å $beskrivelse ($operasjon) for identitetsnummer $identitetsnummer"
+        val correlationId = call.request.headers[HttpHeaders.XCorrelationId]!!
 
-        // TODO: correlationId
-        when (personTilgangService.sjekkTilgang(identitetsnummer, "TODO", authHeader)) {
+        when (personTilgangService.sjekkTilgang(identitetsnummer, correlationId, authHeader)) {
             true -> {
                 secureLog("Innvilget: $logMessage")
                 call.respond(HttpStatusCode.NoContent)
