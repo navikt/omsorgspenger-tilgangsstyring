@@ -14,7 +14,7 @@ import no.nav.omsorgspenger.pdl.Unauthorised
 private const val pdlApiBasePath = "/pdlapi-mock"
 private const val pdlApiMockPath = "/"
 
-private fun WireMockServer.stubPdlApiHentPerson(): WireMockServer {
+private fun WireMockServer.stubPdlApiHentPerson(identitetsnummer: String): WireMockServer {
     WireMock.stubFor(
         WireMock.post(
             WireMock
@@ -26,7 +26,7 @@ private fun WireMockServer.stubPdlApiHentPerson(): WireMockServer {
             .withHeader("Nav-Consumer-Token", AnythingPattern())
             .withHeader("x-nav-apiKey", AnythingPattern())
             .withHeader("TEMA", equalTo("OMS"))
-            .withRequestBody(matchingJsonPath("$.variables.ident", containing(identSomGirTilgang_1)))
+            .withRequestBody(matchingJsonPath("$.variables.ident", containing(identitetsnummer)))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)
@@ -121,5 +121,6 @@ private fun WireMockServer.stubPdlApiServerErrorResponse(): WireMockServer {
 internal fun WireMockServer.stubPdlApi() = stubPdlApiHentPersonWithError(Unauthorised, identSomGirUnauthorised)
     .stubPdlApiHentPersonWithError(NotFound, identSomIkkeFinnes)
     .stubPdlApiHentPersonWithError(ServerError, identSomKasterServerError)
-    .stubPdlApiHentPerson()
+    .stubPdlApiHentPerson(identSomGirTilgang_1)
+    .stubPdlApiHentPerson(identSomGirTilgang_2)
     .stubPdlApiServerErrorResponse()

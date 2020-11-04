@@ -9,6 +9,7 @@ import io.ktor.server.testing.setBody
 import no.nav.helse.dusseldorf.testsupport.jws.Azure
 import no.nav.omsorgspenger.testutils.TestApplicationExtension
 import no.nav.omsorgspenger.testutils.mocks.identSomGirTilgang_1
+import no.nav.omsorgspenger.testutils.mocks.identSomGirTilgang_2
 import no.nav.omsorgspenger.testutils.mocks.identSomGirUnauthorised
 import no.nav.omsorgspenger.testutils.mocks.identSomIkkeFinnes
 import no.nav.omsorgspenger.testutils.mocks.identSomKasterServerError
@@ -39,6 +40,50 @@ internal class PersonTilgangApiTest(
                 setBody(jsonBody)
             }.apply {
                 assertThat(response.status()).isEqualTo(HttpStatusCode.NoContent)
+            }
+        }
+    }
+
+    @Test
+    internal fun `Gir 204 ved flere gyldige identitetsnumre`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                @Language("JSON")
+                val jsonBody = """
+                    {
+                      "identitetsnummer": ["$identSomGirTilgang_1", "$identSomGirTilgang_2"],
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp saksnummer"
+                    }
+                """.trimIndent()
+                setBody(jsonBody)
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.NoContent)
+            }
+        }
+    }
+
+    @Test
+    internal fun `Gir 403 dersom man ikke har tilgang til minst ett identitetsnummer`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                @Language("JSON")
+                val jsonBody = """
+                    {
+                      "identitetsnummer": ["$identSomGirTilgang_1", "$identSomIkkeFinnes", "$identSomGirUnauthorised"],
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp saksnummer"
+                    }
+                """.trimIndent()
+                setBody(jsonBody)
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.Forbidden)
             }
         }
     }
