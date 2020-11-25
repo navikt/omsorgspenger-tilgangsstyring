@@ -23,7 +23,10 @@ internal class PdlClient(
     private val serviceUser: ServiceUser,
     private val httpClient: HttpClient,
     private val scopes: Set<String>
-) : HealthCheck {
+)
+// TODO: kommenter inn igjen
+//    : HealthCheck
+{
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
@@ -45,19 +48,19 @@ internal class PdlClient(
         }.receive()
     }
 
-    override suspend fun check() = kotlin.runCatching {
-        httpClient.options<HttpStatement>(pdlBaseUrl) {
-            header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(scopes))
-        }.execute().status
-    }.fold(
-        onSuccess = { statusCode ->
-            when (HttpStatusCode.OK == statusCode) {
-                true -> Healthy("PdlClient", "OK")
-                false -> UnHealthy("PdlClient", "Feil: Mottok Http Status Code ${statusCode.value}")
-            }
-        },
-        onFailure = {
-            UnHealthy("PdlClient", "Feil: ${it.message}")
-        }
-    )
+//    override suspend fun check() = kotlin.runCatching {
+//        httpClient.options<HttpStatement>(pdlBaseUrl) {
+//            header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(scopes))
+//        }.execute().status
+//    }.fold(
+//        onSuccess = { statusCode ->
+//            when (HttpStatusCode.OK == statusCode) {
+//                true -> Healthy("PdlClient", "OK")
+//                false -> UnHealthy("PdlClient", "Feil: Mottok Http Status Code ${statusCode.value}")
+//            }
+//        },
+//        onFailure = {
+//            UnHealthy("PdlClient", "Feil: ${it.message}")
+//        }
+//    )
 }
