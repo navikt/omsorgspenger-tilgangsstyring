@@ -24,11 +24,12 @@ import no.nav.helse.dusseldorf.ktor.auth.withoutAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
 import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
 import no.nav.helse.dusseldorf.ktor.core.fromXCorrelationIdHeader
+import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.pdl.PdlClient
 import no.nav.omsorgspenger.person.PersonTilgangApi
 import no.nav.omsorgspenger.person.PersonTilgangService
-import no.nav.omsorgspenger.sts.StsRestClient
+import java.net.URI
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -58,8 +59,8 @@ fun Application.app() {
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
     val pdlConfig = environment.config.config("nav.pdl")
-    val stsConfig = environment.config.config("nav.sts")
     val srvConfig = environment.config.config("nav.service_user")
+    val azureConfig = environment.config.config("nav.auth.azure")
 
     val serviceUser = ServiceUser(
         username = srvConfig.property("srv_username").getString(),
@@ -70,18 +71,17 @@ fun Application.app() {
             serializer = JacksonSerializer(objectMapper)
         }
     }
-    val stsRestClient = StsRestClient(
-        stsTokenUrl = stsConfig.property("sts_token_url").getString(),
-        stsApiGwKey = stsConfig.property("sts_api_gw_key").getString(),
-        serviceUser = serviceUser,
-        httpClient = httpClient
+    val accessTokenClient = ClientSecretAccessTokenClient(
+        clientId = azureConfig.property("client_id").getString(),
+        clientSecret = azureConfig.property("client_secret").getString(),
+        tokenEndpoint = URI(azureConfig.property("token_endpoint").getString())
     )
     val pdlClient = PdlClient(
         pdlBaseUrl = pdlConfig.property("pdl_base_url").getString(),
-        pdlApiKey = pdlConfig.property("pdl_api_gw_key").getString(),
-        stsRestClient = stsRestClient,
+        accessTokenClient = accessTokenClient,
         serviceUser = serviceUser,
-        httpClient = httpClient
+        httpClient = httpClient,
+        scopes = setOf(environment.config.property("nav.omsorgspenger_proxy.scope").getString())
     )
 
     install(Routing) {

@@ -13,16 +13,19 @@ import io.ktor.http.contentType
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
+import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.omsorgspenger.config.ServiceUser
-import no.nav.omsorgspenger.sts.StsRestClient
 
 internal class PdlClient(
     private val pdlBaseUrl: String,
-    private val pdlApiKey: String,
-    private val stsRestClient: StsRestClient,
+    accessTokenClient: AccessTokenClient,
     private val serviceUser: ServiceUser,
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val scopes: Set<String>
 ) : HealthCheck {
+
+    private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
     suspend fun hentInfoOmPersoner(identer: Set<String>, correlationId: String, authHeader: String): List<HentPersonResponse> {
         return identer.map {
@@ -33,11 +36,9 @@ internal class PdlClient(
     private suspend fun hentInfoOmPerson(ident: String, correlationId: String, authHeader: String): HentPersonResponse {
         return httpClient.post<HttpStatement>(pdlBaseUrl) {
             header(HttpHeaders.Authorization, authHeader)
-            header("Nav-Consumer-Token", "Bearer ${stsRestClient.token()}")
             header("Nav-Consumer-Id", serviceUser.username)
             header("Nav-Call-Id", correlationId)
             header("TEMA", "OMS")
-            header("x-nav-apiKey", pdlApiKey)
             accept(ContentType.Application.Json)
             contentType(ContentType.Application.Json)
             body = hentPersonInfoQuery(ident)
@@ -46,8 +47,7 @@ internal class PdlClient(
 
     override suspend fun check() = kotlin.runCatching {
         httpClient.options<HttpStatement>(pdlBaseUrl) {
-            header(HttpHeaders.Authorization, "Bearer ${stsRestClient.token()}")
-            header("x-nav-apiKey", pdlApiKey)
+            header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(scopes))
         }.execute().status
     }.fold(
         onSuccess = { statusCode ->

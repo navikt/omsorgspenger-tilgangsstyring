@@ -3,7 +3,7 @@ package no.nav.omsorgspenger.testutils
 import no.nav.helse.dusseldorf.testsupport.jws.Azure
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2JwksUrl
-import no.nav.helse.dusseldorf.testsupport.wiremock.getNaisStsTokenUrl
+import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2TokenUrl
 import no.nav.omsorgspenger.testutils.mocks.pdlApiBaseUrl
 import no.nav.omsorgspenger.testutils.mocks.stubPdlApi
 
@@ -14,7 +14,6 @@ internal class MockedEnvironment(
     internal val wireMockServer = WireMockBuilder()
         .withPort(wireMockPort)
         .withAzureSupport()
-        .withNaisStsSupport()
         .build()
         .stubPdlApi()
 
@@ -24,12 +23,14 @@ internal class MockedEnvironment(
         appConfig["nav.auth.issuers.0.alias"] = "azure-v2"
         appConfig["nav.auth.issuers.0.jwks_uri"] = wireMockServer.getAzureV2JwksUrl()
         appConfig["nav.auth.issuers.0.issuer"] = Azure.V2_0.getIssuer()
-        appConfig["nav.sts.sts_token_url"] = wireMockServer.getNaisStsTokenUrl()
-        appConfig["nav.sts.sts_api_gw_key"] = "testApiKeySts"
+        appConfig["nav.auth.azure.client_id"] = "omsorgspenger-tilgangsstyring"
+        appConfig["nav.auth.azure.client_secret"] = "anything"
+        appConfig["nav.auth.azure.token_endpoint"] = wireMockServer.getAzureV2TokenUrl()
         appConfig["nav.pdl.pdl_base_url"] = wireMockServer.pdlApiBaseUrl()
         appConfig["nav.pdl.pdl_api_gw_key"] = "testPdlApiKey"
         appConfig["nav.service_user.srv_username"] = "test_username"
         appConfig["nav.service_user.srv_password"] = "test_pw"
+        appConfig["nav.omsorgspenger_proxy.scope"] = "anyhting/.default"
     }
 
     internal fun start() = this
