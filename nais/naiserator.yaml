@@ -19,7 +19,7 @@ spec:
         - application: omsorgspenger-rammemeldinger
     outbound:
       external:
-        - host: {{proxyUrl}}
+        - host: {{proxyHost}}
   liveness:
     path: isalive
     initialDelay: 20

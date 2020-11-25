@@ -6,7 +6,7 @@
   "minReplicas": "1",
   "maxReplicas": "1",
   "azureTenant": "trygdeetaten.no",
-  "proxyUrl": "https://omsorgspenger-proxy.dev-fss-pub.nais.io",
+  "proxyHost": "omsorgspenger-proxy.dev-fss-pub.nais.io",
   "ingresses": [
     "https://omsorgspenger-tilgangsstyring.dev.intern.nav.no"
   ],
