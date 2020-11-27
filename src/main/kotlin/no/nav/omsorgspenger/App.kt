@@ -24,6 +24,7 @@ import no.nav.helse.dusseldorf.ktor.auth.withoutAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
 import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
 import no.nav.helse.dusseldorf.ktor.core.fromXCorrelationIdHeader
+import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
@@ -89,6 +90,11 @@ fun Application.app() {
         setOf(
             pdlClient
         )
+    )
+
+    HealthReporter(
+        "omsorgspenger-tilgangsstyring",
+        healthService
     )
 
     install(Routing) {
