@@ -22,6 +22,7 @@ dependencies {
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("no.nav.helse:dusseldorf-ktor-auth:$dusseldorfVersion")
+    implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-core:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfVersion")
 
@@ -32,7 +33,7 @@ dependencies {
     }
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
-    testImplementation ("org.assertj:assertj-core:$assertJVersion")
+    testImplementation("org.assertj:assertj-core:$assertJVersion")
 }
 
 repositories {

@@ -17,6 +17,9 @@ spec:
       rules:
         - application: omsorgspenger-sak
         - application: omsorgspenger-rammemeldinger
+    outbound:
+      external:
+        - host: {{proxyHost}}
   liveness:
     path: isalive
     initialDelay: 20
