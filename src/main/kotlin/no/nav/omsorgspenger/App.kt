@@ -27,6 +27,7 @@ import no.nav.helse.dusseldorf.ktor.core.fromXCorrelationIdHeader
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
+import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.pdl.PdlClient
@@ -99,6 +100,7 @@ fun Application.app() {
 
     install(Routing) {
         HealthRoute(healthService = healthService)
+        MetricsRoute()
         DefaultProbeRoutes()
         authenticate(*issuers.allIssuers()) {
             PersonTilgangApi(
