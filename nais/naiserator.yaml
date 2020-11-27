@@ -47,6 +47,9 @@ spec:
     cpuThresholdPercentage: 90
   secureLogs:
     enabled: true
+  prometheus:
+    enabled: true
+    path: /metrics
   envFrom:
     - secret: omsorgspenger-tilgangsstyring-apigwkeys
     - secret: omsorgspenger-tilgangsstyring-srvusercredentials
