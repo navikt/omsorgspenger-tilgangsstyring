@@ -24,6 +24,10 @@ import no.nav.helse.dusseldorf.ktor.auth.withoutAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
 import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
 import no.nav.helse.dusseldorf.ktor.core.fromXCorrelationIdHeader
+import no.nav.helse.dusseldorf.ktor.health.HealthReporter
+import no.nav.helse.dusseldorf.ktor.health.HealthRoute
+import no.nav.helse.dusseldorf.ktor.health.HealthService
+import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.pdl.PdlClient
@@ -83,8 +87,20 @@ fun Application.app() {
         httpClient = httpClient,
         scopes = setOf(environment.config.property("nav.omsorgspenger_proxy.scope").getString())
     )
+    val healthService = HealthService(
+        setOf(
+            pdlClient
+        )
+    )
+
+    HealthReporter(
+        "omsorgspenger-tilgangsstyring",
+        healthService
+    )
 
     install(Routing) {
+        HealthRoute(healthService = healthService)
+        MetricsRoute()
         DefaultProbeRoutes()
         authenticate(*issuers.allIssuers()) {
             PersonTilgangApi(

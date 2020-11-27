@@ -47,7 +47,7 @@ internal class PdlClient(
 
     override suspend fun check() = kotlin.runCatching {
         httpClient.options<HttpStatement>(pdlBaseUrl) {
-            header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(scopes))
+            header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(scopes).asAuthoriationHeader())
         }.execute().status
     }.fold(
         onSuccess = { statusCode ->
