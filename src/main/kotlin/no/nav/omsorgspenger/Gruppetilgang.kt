@@ -29,7 +29,8 @@ internal class Gruppetilgang(grupperResourcePath: String) {
         ).toSet()
 
 
-        val harTilgang= grupper.contains(gruppeMapping[Gruppe.Saksbehandler]) || grupper.contains(gruppeMapping[Gruppe.Veileder])
+        val harTilgang = grupper.any { it in gruppeMapping.values }
+
         if (!harTilgang) {
             secureLog("Er ikke medlem av rett gruppe for $operasjon. Er medlem av $grupper")
         }
@@ -38,7 +39,10 @@ internal class Gruppetilgang(grupperResourcePath: String) {
 
     private enum class Gruppe {
         Saksbehandler,
-        Veileder
+        Veileder,
+        Beslutter,
+        Oppgavestyrer,
+        Overstyrer
     }
 
     private fun String.fraResources() = requireNotNull(Thread.currentThread().contextClassLoader.getResource(this)) {
