@@ -14,7 +14,7 @@ internal class HealthTest(
     private val testApplicationEngine: TestApplicationEngine
 ) {
     @Test
-    internal fun `isready gir 200`() {
+    fun `isready gir 200`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Get, "/isready") {}.apply {
                 assertThat(response.status()).isEqualTo(HttpStatusCode.OK)
@@ -23,7 +23,7 @@ internal class HealthTest(
     }
 
     @Test
-    internal fun `isalive gir 200`() {
+    fun `isalive gir 200`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Get, "/isalive") {}.apply {
                 assertThat(response.status()).isEqualTo(HttpStatusCode.OK)

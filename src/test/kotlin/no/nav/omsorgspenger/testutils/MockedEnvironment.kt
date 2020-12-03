@@ -31,6 +31,7 @@ internal class MockedEnvironment(
         appConfig["nav.service_user.srv_username"] = "test_username"
         appConfig["nav.service_user.srv_password"] = "test_pw"
         appConfig["nav.omsorgspenger_proxy.scope"] = "anyhting/.default"
+        appConfig["nav.gruppe_resource_path"] = "gruppe/test.json"
     }
 
     internal fun start() = this

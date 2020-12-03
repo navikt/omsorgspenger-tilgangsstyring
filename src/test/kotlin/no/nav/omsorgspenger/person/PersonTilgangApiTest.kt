@@ -23,12 +23,12 @@ internal class PersonTilgangApiTest(
     private val testApplicationEngine: TestApplicationEngine
 ) {
     @Test
-    internal fun `Gir 204 ved oppgitt identitetsnummer og operasjon`() {
+    fun `Gir 204 ved oppgitt identitetsnummer og operasjon`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader(HttpHeaders.XCorrelationId, "id")
-                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Beslutter"))}")
                 @Language("JSON")
                 val jsonBody = """
                     {
@@ -45,12 +45,12 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Gir 204 ved flere gyldige identitetsnumre`() {
+    fun `Gir 204 ved flere gyldige identitetsnumre`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader(HttpHeaders.XCorrelationId, "id")
-                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Overstyrer", "UkjentGruppe"))}")
                 @Language("JSON")
                 val jsonBody = """
                     {
@@ -67,12 +67,34 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Gir 403 dersom man ikke har tilgang til minst ett identitetsnummer`() {
+    fun `Gir 403 om man ikke har rett gruppe`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader(HttpHeaders.XCorrelationId, "id")
-                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("UkjentGruppe"))}")
+                @Language("JSON")
+                val jsonBody = """
+                    {
+                      "identitetsnummer": ["$identSomGirTilgang_1", "$identSomGirTilgang_2"],
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp saksnummer"
+                    }
+                """.trimIndent()
+                setBody(jsonBody)
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.Forbidden)
+            }
+        }
+    }
+
+    @Test
+    fun `Gir 403 dersom man ikke har tilgang til minst ett identitetsnummer`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Veileder", "Saksbehandler"))}")
                 @Language("JSON")
                 val jsonBody = """
                     {
@@ -89,11 +111,11 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Request uten body gir 400`() {
+    fun `Request uten body gir 400`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Beslutter"))}")
                 setBody("{}")
             }.apply {
                 assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
@@ -113,7 +135,7 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Gir 403 dersom token ikke er utstedt til en personbruker`() {
+    fun `Gir 403 dersom token ikke er utstedt til en personbruker`() {
         val tokenUtenPersonbrukerClaims = Azure.V2_0.generateJwt(
             clientId = "any",
             clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,
@@ -133,11 +155,11 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Gir 403 dersom ikke tilgang til person`() {
+    fun `Gir 403 dersom ikke tilgang til person`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Beslutter"))}")
                 addHeader(HttpHeaders.XCorrelationId, "id")
                 @Language("JSON")
                 val jsonBody = """
@@ -155,11 +177,11 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Gir tilgang dersom person ikke finnes`() {
+    fun `Gir tilgang dersom person ikke finnes`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Beslutter"))}")
                 addHeader(HttpHeaders.XCorrelationId, "id")
                 @Language("JSON")
                 val jsonBody = """
@@ -177,11 +199,11 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Kaster feil dersom server_error i PDL response error object`() {
+    fun `Kaster feil dersom server_error i PDL response error object`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader("Authorization", "Bearer ${gyldigToken()}")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Beslutter"))}")
                 @Language("JSON")
                 val jsonBody = """
                     {
@@ -198,10 +220,13 @@ internal class PersonTilgangApiTest(
     }
 }
 
-internal fun gyldigToken() = Azure.V2_0.generateJwt(
+internal fun gyldigToken(
+    grupper: Set<String>
+) = Azure.V2_0.generateJwt(
     clientId = "any",
     clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,
     audience = "any",
+    groups = grupper,
     overridingClaims = mapOf(
         "oid" to "any",
         "preferred_username" to "Test Brukersen"
