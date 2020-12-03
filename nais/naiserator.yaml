@@ -51,7 +51,6 @@ spec:
     enabled: true
     path: /metrics
   envFrom:
-    - secret: omsorgspenger-tilgangsstyring-apigwkeys
     - secret: omsorgspenger-tilgangsstyring-srvusercredentials
   env:
   {{#each env}}
