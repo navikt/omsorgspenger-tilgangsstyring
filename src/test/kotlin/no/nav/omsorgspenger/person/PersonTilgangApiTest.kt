@@ -202,6 +202,7 @@ internal fun gyldigToken() = Azure.V2_0.generateJwt(
     clientId = "any",
     clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,
     audience = "any",
+    groups = setOf("Saksbehandler"),
     overridingClaims = mapOf(
         "oid" to "any",
         "preferred_username" to "Test Brukersen"

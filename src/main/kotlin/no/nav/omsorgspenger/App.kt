@@ -24,6 +24,7 @@ import no.nav.helse.dusseldorf.ktor.auth.withoutAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
 import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
 import no.nav.helse.dusseldorf.ktor.core.fromXCorrelationIdHeader
+import no.nav.helse.dusseldorf.ktor.core.getRequiredString
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
@@ -106,6 +107,9 @@ fun Application.app() {
             PersonTilgangApi(
                 personTilgangService = PersonTilgangService(
                     pdlClient = pdlClient
+                ),
+                gruppetilgang = Gruppetilgang(
+                    grupperResourcePath = environment.config.getRequiredString("nav.gruppe_resource_path", secret = false)
                 )
             )
         }

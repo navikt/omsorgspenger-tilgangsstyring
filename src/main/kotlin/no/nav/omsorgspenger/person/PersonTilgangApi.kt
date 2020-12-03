@@ -11,27 +11,25 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
+import no.nav.omsorgspenger.Gruppetilgang
 import no.nav.omsorgspenger.secureLog
 import org.slf4j.LoggerFactory
 
-internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) {
+internal fun Route.PersonTilgangApi(
+    personTilgangService: PersonTilgangService,
+    gruppetilgang: Gruppetilgang) {
 
     val logger = LoggerFactory.getLogger("no.nav.omsorgspenger.person.PersonTilgangApi")
 
     post("/api/tilgang/personer") {
-        val jwt = call.principal<JWTPrincipal>().also {
-            if (it == null) {
-                return@post call.respond(HttpStatusCode.Unauthorized)
-            }
-        }
+        val jwt = call.principal<JWTPrincipal>() ?: return@post call.respond(HttpStatusCode.Unauthorized)
+        val authorizationHeader = requireNotNull(call.request.headers[HttpHeaders.Authorization])
 
-        if (!jwt!!.erPersonbruker()) {
-            val systemId = jwt.payload.claims["azp"]?.asString()
-            logger.warn("personer-api ble kalt fra et system og ikke en personbruker. System-id: $systemId")
+        if (!jwt.erPersonbruker()) {
+            val clientId = jwt.payload.claims["azp"]?.asString()
+            logger.warn("Tilgangsstyring ble kalt fra et system og ikke en personbruker. ClientId: $clientId")
             return@post call.respond(HttpStatusCode.Forbidden)
         }
-
-        val authHeader = call.request.headers[HttpHeaders.Authorization]!!
 
         val (identitetsnummer, operasjon, beskrivelse) = kotlin.runCatching {
             call.receive<PersonerRequestBody>()
@@ -53,7 +51,15 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
         val logMessage = "Personen $username ønsker å $beskrivelse ($operasjon) for identitetsnummer $identitetsnummer"
         val correlationId = call.request.headers[HttpHeaders.XCorrelationId]!!
 
-        when (personTilgangService.sjekkTilgang(identitetsnummer, correlationId, authHeader)) {
+        if (!gruppetilgang.kanGjøreOperasjon(jwt = jwt, operasjon = operasjon)) {
+            secureLog("Avslått: $logMessage")
+            return@post call.respond(HttpStatusCode.Forbidden)
+        }
+
+        when (personTilgangService.sjekkTilgang(
+            identitetsnummer = identitetsnummer,
+            correlationId = correlationId,
+            authHeader = authorizationHeader)) {
             true -> {
                 secureLog("Innvilget: $logMessage")
                 call.respond(HttpStatusCode.NoContent)
@@ -65,6 +71,7 @@ internal fun Route.PersonTilgangApi(personTilgangService: PersonTilgangService) 
         }
     }
 }
+
 
 private fun JWTPrincipal.erPersonbruker() =
     this.payload.claims.contains("oid") && this.payload.claims.contains("preferred_username")
