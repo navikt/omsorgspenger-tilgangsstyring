@@ -61,8 +61,8 @@ internal class ActiveDirectoryGateway(
         require(statusCode == HttpStatusCode.OK) {
             "Mottok StatusCode $statusCode ved henting av grupper."
         }
-        return JSONObject(response).let { json -> when (json.has("values")) {
-            true -> json.getJSONArray("values")
+        return JSONObject(response).let { json -> when (json.has("value")) {
+            true -> json.getJSONArray("value")
             false -> JSONArray()
         }}.map { it as JSONObject }.map { it.getString("displayName") }.toSet()
     }

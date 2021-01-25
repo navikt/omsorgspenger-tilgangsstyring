@@ -28,6 +28,6 @@ internal fun WireMockServer.stubMemberOf(correlationId: String): WireMockServer 
 }
 
 private val correlationIdResponseMapping = mapOf(
-    "Correlation-Id-Saksbehandler" to """{"values": [{ "displayName": "0000-GA-k9-saksbehandler" }]}""",
-    "Correlation-Id-UkjentGruppe" to """{"values": [{ "displayName": "UkjentGruppe" }]}"""
+    "Correlation-Id-Saksbehandler" to """{"value": [{ "displayName": "0000-GA-k9-saksbehandler" }]}""",
+    "Correlation-Id-UkjentGruppe" to """{"value": [{ "displayName": "UkjentGruppe" }]}"""
 )
