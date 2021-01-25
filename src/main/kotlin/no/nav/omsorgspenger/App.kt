@@ -121,7 +121,7 @@ fun Application.app() {
                 ),
                 gruppetilgangService = GruppetilgangService(
                     gruppeResolver = GruppeResolver(
-                        azureGroupMappingPath = environment.config.getRequiredString("nav.gruppe_resource_path", secret = false) // TODO: Rename
+                        azureGroupMappingPath = environment.config.getRequiredString("nav.azure_gruppemapping_resource_path", secret = false)
                     )
                 )
             )
