@@ -21,7 +21,8 @@ internal class GruppeResolver(
         it in jwt.claims.getValue("groups").asArray(String::class.java)
     }.keys
 
-    private suspend fun OpenAmToken.resolve(correlationId: String) = setOf<Gruppe>() // TODO
+    // TODO: https://github.com/navikt/omsorgspenger-tilgangsstyring/issues/9
+    private suspend fun OpenAmToken.resolve(correlationId: String) = setOf<Gruppe>()
 
     private companion object {
         private val logger = LoggerFactory.getLogger(GruppeResolver::class.java)
@@ -41,5 +42,5 @@ enum class Gruppe {
     Beslutter,
     Oppgavestyrer,
     Overstyrer
-    //Drift TODO
+    //Drift TODO: https://github.com/navikt/omsorgspenger-tilgangsstyring/issues/8
 }
