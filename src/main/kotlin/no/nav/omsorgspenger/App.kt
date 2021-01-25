@@ -28,6 +28,8 @@ import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
+import no.nav.omsorgspenger.auth.ActiveDirectoryGateway
+import no.nav.omsorgspenger.auth.ActiveDirectoryService
 import no.nav.omsorgspenger.auth.GruppeResolver
 import no.nav.omsorgspenger.auth.GruppetilgangService
 import no.nav.omsorgspenger.auth.TokenResolver
@@ -92,12 +94,15 @@ fun Application.app() {
         clientSecret = azureConfig.property("client_secret").getString(),
         tokenEndpoint = URI(azureConfig.property("token_endpoint").getString())
     )
+
+    val omsorgspengerProxyScopes = setOf(environment.config.property("nav.omsorgspenger_proxy.scope").getString())
+
     val pdlClient = PdlClient(
         pdlBaseUrl = pdlConfig.property("pdl_base_url").getString(),
         accessTokenClient = accessTokenClient,
         serviceUser = serviceUser,
         httpClient = httpClient,
-        scopes = setOf(environment.config.property("nav.omsorgspenger_proxy.scope").getString())
+        scopes = omsorgspengerProxyScopes
     )
     val healthService = HealthService(
         setOf(
@@ -129,7 +134,14 @@ fun Application.app() {
                 ),
                 gruppetilgangService = GruppetilgangService(
                     gruppeResolver = GruppeResolver(
-                        azureGroupMappingPath = environment.config.getRequiredString("nav.azure_gruppemapping_resource_path", secret = false)
+                        azureGroupMappingPath = environment.config.getRequiredString("nav.azure_gruppemapping_resource_path", secret = false),
+                        activeDirectoryService = ActiveDirectoryService(
+                            activeDirectoryGateway = ActiveDirectoryGateway(
+                                memberOfUrl = URI(environment.config.getRequiredString("nav.omsorgspenger_proxy.member_of_uri", secret = false)),
+                                accessTokenClient = accessTokenClient,
+                                scopes = omsorgspengerProxyScopes
+                            )
+                        )
                     )
                 )
             )

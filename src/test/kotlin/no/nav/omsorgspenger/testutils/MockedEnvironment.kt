@@ -6,6 +6,7 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2JwksUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2TokenUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getNaisStsJwksUrl
+import no.nav.omsorgspenger.testutils.mocks.memberOfUri
 import no.nav.omsorgspenger.testutils.mocks.pdlApiBaseUrl
 import no.nav.omsorgspenger.testutils.mocks.stubPdlApi
 
@@ -37,6 +38,7 @@ internal class MockedEnvironment(
         appConfig["nav.service_user.srv_username"] = "test_username"
         appConfig["nav.service_user.srv_password"] = "test_pw"
         appConfig["nav.omsorgspenger_proxy.scope"] = "anyhting/.default"
+        appConfig["nav.omsorgspenger_proxy.member_of_uri"] = wireMockServer.memberOfUri()
         appConfig["nav.azure_gruppemapping_resource_path"] = "azureGruppeMapping/test.json"
     }
 

@@ -28,6 +28,7 @@ internal interface Token {
     val username: String
     val clientId: String
     val erPersonToken : Boolean
+    fun authorizationHeader() = "Bearer ${jwt.token}"
 }
 
 internal class AzureToken private constructor(

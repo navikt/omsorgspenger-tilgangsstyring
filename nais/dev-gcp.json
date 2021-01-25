@@ -18,6 +18,7 @@
     "AZURE_APP_TOKEN_ENDPOINT": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
     "AZURE_GRUPPEMAPPING_RESOURCE_PATH": "azureGruppeMapping/preprod.json",
     "OPEN_AM_JWKS_URI": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/open-am/keys",
-    "OPEN_AM_ISSUER": "https://isso-q.adeo.no:443/isso/oauth2"
+    "OPEN_AM_ISSUER": "https://isso-q.adeo.no:443/isso/oauth2",
+    "MEMBER_OF_URI": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/active-directory/me/memberOf"
   }
 }

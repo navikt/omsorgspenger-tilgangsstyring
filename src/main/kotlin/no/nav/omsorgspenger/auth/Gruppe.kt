@@ -4,7 +4,8 @@ import org.json.JSONObject
 import org.slf4j.LoggerFactory
 
 internal class GruppeResolver(
-    azureGroupMappingPath: String) {
+    azureGroupMappingPath: String,
+    private val activeDirectoryService: ActiveDirectoryService) {
     private val azureGroupMapping = azureGroupMappingPath.groupMappingFromResources()
 
     init {
@@ -22,7 +23,10 @@ internal class GruppeResolver(
     }.keys
 
     // TODO: https://github.com/navikt/omsorgspenger-tilgangsstyring/issues/9
-    private suspend fun OpenAmToken.resolve(correlationId: String) = setOf<Gruppe>()
+    private suspend fun OpenAmToken.resolve(correlationId: String) = activeDirectoryService.memberOf(
+        token = this,
+        correlationId = correlationId
+    )
 
     private companion object {
         private val logger = LoggerFactory.getLogger(GruppeResolver::class.java)
