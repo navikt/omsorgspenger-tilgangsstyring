@@ -30,6 +30,9 @@ import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
+import no.nav.omsorgspenger.auth.GruppeResolver
+import no.nav.omsorgspenger.auth.GruppetilgangService
+import no.nav.omsorgspenger.auth.TokenResolver
 import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.pdl.PdlClient
 import no.nav.omsorgspenger.person.PersonTilgangApi
@@ -108,8 +111,16 @@ fun Application.app() {
                 personTilgangService = PersonTilgangService(
                     pdlClient = pdlClient
                 ),
-                gruppetilgang = Gruppetilgang(
-                    grupperResourcePath = environment.config.getRequiredString("nav.gruppe_resource_path", secret = false)
+                tokenResolver = TokenResolver(
+                    azureIssuers = setOf(
+                        issuers.filterKeys { it.alias() == "azure-v2" }.keys.first().issuer()
+                    ),
+                    openAmIssuers = setOf()
+                ),
+                gruppetilgangService = GruppetilgangService(
+                    gruppeResolver = GruppeResolver(
+                        azureGroupMappingPath = environment.config.getRequiredString("nav.gruppe_resource_path", secret = false) // TODO: Rename
+                    )
                 )
             )
         }
