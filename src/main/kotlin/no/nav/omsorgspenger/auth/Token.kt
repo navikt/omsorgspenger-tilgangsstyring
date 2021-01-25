@@ -56,7 +56,7 @@ internal class OpenAmToken private constructor(
     internal companion object {
         internal fun parse(jwt: DecodedJWT) = OpenAmToken(
             jwt = jwt,
-            clientId = jwt.claims.getValue("TODO").asString(),
+            clientId = jwt.claims.getValue("azp").asString(),
             sub = jwt.subject
         )
     }

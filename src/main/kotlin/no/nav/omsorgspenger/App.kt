@@ -115,7 +115,9 @@ fun Application.app() {
                     azureIssuers = setOf(
                         issuers.filterKeys { it.alias() == "azure-v2" }.keys.first().issuer()
                     ),
-                    openAmIssuers = setOf()
+                    openAmIssuers = setOf(
+                        issuers.filterKeys { it.alias() == "open-am" }.keys.first().issuer()
+                    )
                 ),
                 gruppetilgangService = GruppetilgangService(
                     gruppeResolver = GruppeResolver(
