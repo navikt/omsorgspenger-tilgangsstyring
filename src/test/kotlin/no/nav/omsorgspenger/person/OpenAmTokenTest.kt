@@ -21,35 +21,45 @@ internal class OpenAmTokenTest(
     fun `Gir 204 ved når man har rett gruppe`() {
         val correlationId = "Correlation-Id-Saksbehandler"
         wireMockServer.stubMemberOf(correlationId)
-        with(testApplicationEngine) {
-            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
-                addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader(HttpHeaders.XCorrelationId, correlationId)
-                addHeader("Authorization", "Bearer ${gyldigToken(navIdent = "Ola")}")
-                @Language("JSON")
-                val jsonBody = """
-                    {
-                      "identitetsnummer": ["$identSomGirTilgang_1"],
-                      "operasjon": "${Operasjon.Visning}",
-                      "beskrivelse": "slå opp saksnummer"
-                    }
-                """.trimIndent()
-                setBody(jsonBody)
-            }.apply {
-                assertThat(response.status()).isEqualTo(HttpStatusCode.NoContent)
-            }
-        }
+        requestAndAssert(
+            forventetStatusCode = HttpStatusCode.NoContent,
+            correlationId = correlationId,
+            navIdent = "Ola"
+        )
     }
 
     @Test
     fun `Gir 403 når man ikke er medlem av rett gruppe`() {
         val correlationId = "Correlation-Id-UkjentGruppe"
         wireMockServer.stubMemberOf(correlationId)
+        requestAndAssert(
+            forventetStatusCode = HttpStatusCode.Forbidden,
+            correlationId = correlationId,
+            navIdent = "Kari"
+        )
+    }
+
+    @Test
+    fun `Gir 500 ved feil på oppslag på grupper`() {
+        val correlationId = "Correlation-Id-404"
+        wireMockServer.stubMemberOf(correlationId)
+        requestAndAssert(
+            forventetStatusCode = HttpStatusCode.InternalServerError,
+            correlationId = correlationId,
+            navIdent = "Pål"
+        )
+    }
+
+
+    private fun requestAndAssert(
+        forventetStatusCode: HttpStatusCode,
+        correlationId: String,
+        navIdent: String) {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader(HttpHeaders.XCorrelationId, correlationId)
-                addHeader("Authorization", "Bearer ${gyldigToken(navIdent = "Kari")}")
+                addHeader("Authorization", "Bearer ${gyldigToken(navIdent = navIdent)}")
                 @Language("JSON")
                 val jsonBody = """
                     {
@@ -60,7 +70,7 @@ internal class OpenAmTokenTest(
                 """.trimIndent()
                 setBody(jsonBody)
             }.apply {
-                assertThat(response.status()).isEqualTo(HttpStatusCode.Forbidden)
+                assertThat(response.status()).isEqualTo(forventetStatusCode)
             }
         }
     }
