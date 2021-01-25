@@ -56,7 +56,7 @@ internal fun Route.PersonTilgangApi(
         when (personTilgangService.sjekkTilgang(
             identitetsnummer = identitetsnummer,
             correlationId = correlationId,
-            authHeader = authorizationHeader)) {
+            token = token)) {
             true -> {
                 secureLog("Innvilget: $secureLogMessage")
                 call.respond(HttpStatusCode.NoContent)

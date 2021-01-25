@@ -67,7 +67,7 @@ internal class ActiveDirectoryGateway(
         }}.map { it as JSONObject }.map { it.getString("displayName") }.toSet()
     }
 
-    private companion object {
-        private const val OpenAmTokenHeader = "X-Open-AM"
+    internal companion object {
+        internal const val OpenAmTokenHeader = "X-Open-AM"
     }
 }

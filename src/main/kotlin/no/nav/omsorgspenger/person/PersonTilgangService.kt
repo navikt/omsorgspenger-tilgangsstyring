@@ -1,5 +1,6 @@
 package no.nav.omsorgspenger.person
 
+import no.nav.omsorgspenger.auth.Token
 import no.nav.omsorgspenger.pdl.BadRequest
 import no.nav.omsorgspenger.pdl.NotFound
 import no.nav.omsorgspenger.pdl.PdlClient
@@ -14,8 +15,14 @@ internal class PersonTilgangService(
 
     private val logger = LoggerFactory.getLogger(PersonTilgangService::class.java)
 
-    internal suspend fun sjekkTilgang(identitetsnummer: List<String>, correlationId: String, authHeader: String): Boolean {
-        val errors = pdlClient.hentInfoOmPersoner(identitetsnummer.toSet(), correlationId, authHeader).flatMap {
+    internal suspend fun sjekkTilgang(
+        identitetsnummer: List<String>,
+        correlationId: String,
+        token: Token): Boolean {
+        val errors = pdlClient.hentInfoOmPersoner(
+            identitetsnummer = identitetsnummer.toSet(),
+            correlationId = correlationId,
+            token = token).flatMap {
             it.errors ?: emptyList()
         }
 
