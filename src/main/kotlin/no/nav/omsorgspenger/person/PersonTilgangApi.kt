@@ -23,6 +23,7 @@ internal fun Route.PersonTilgangApi(
 
     post("/api/tilgang/personer") {
         val (authorizationHeader, token) = tokenResolver.resolve(call) ?: return@post call.respond(HttpStatusCode.Unauthorized)
+        val correlationId = call.request.headers[HttpHeaders.XCorrelationId] ?: return@post call.respond(HttpStatusCode.BadRequest)
 
         if (!token.erPersonToken) {
             logger.warn("Tilgangsstyring ble kalt fra et system og ikke en personbruker. Issuer: ${token.jwt.issuer}, ClientId: ${token.clientId}")
@@ -46,7 +47,6 @@ internal fun Route.PersonTilgangApi(
         )
 
         val secureLogMessage = "Personen ${token.username} ønsker å $beskrivelse ($operasjon) for identitetsnummer $identitetsnummer"
-        val correlationId = call.request.headers[HttpHeaders.XCorrelationId]!!
 
         if (!gruppetilgangService.kanGjøreOperasjon(operasjon = operasjon, token = token, correlationId = correlationId)) {
             secureLog("Avslått: $secureLogMessage")
