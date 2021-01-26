@@ -147,6 +147,7 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.XCorrelationId, "id")
                 addHeader("Authorization", "Bearer $tokenUtenPersonbrukerClaims")
             }.apply {
                 assertThat(response.status()).isEqualTo(HttpStatusCode.Forbidden)
@@ -203,6 +204,7 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.XCorrelationId, "id")
                 addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Beslutter"))}")
                 @Language("JSON")
                 val jsonBody = """
@@ -220,7 +222,7 @@ internal class PersonTilgangApiTest(
     }
 }
 
-internal fun gyldigToken(
+private fun gyldigToken(
     grupper: Set<String>
 ) = Azure.V2_0.generateJwt(
     clientId = "any",

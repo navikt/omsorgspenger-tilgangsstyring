@@ -5,7 +5,7 @@ enum class Operasjon {
 }
 
 data class PersonerRequestBody(
-    val identitetsnummer: List<String>,
+    val identitetsnummer: Set<String>,
     val operasjon: Operasjon,
     val beskrivelse: String
 )

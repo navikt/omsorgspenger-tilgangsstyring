@@ -11,7 +11,6 @@ import no.nav.omsorgspenger.pdl.NotFound
 import no.nav.omsorgspenger.pdl.ServerError
 import no.nav.omsorgspenger.pdl.Unauthorised
 
-private const val pdlApiBasePath = "/pdlapi-mock"
 private const val pdlApiMockPath = "/"
 
 private fun WireMockServer.stubPdlApiHentPerson(identitetsnummer: String): WireMockServer {

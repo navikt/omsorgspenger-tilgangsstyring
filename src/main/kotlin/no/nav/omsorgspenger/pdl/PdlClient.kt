@@ -15,6 +15,9 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
+import no.nav.omsorgspenger.auth.ActiveDirectoryGateway.Companion.OpenAmTokenHeader
+import no.nav.omsorgspenger.auth.OpenAmToken
+import no.nav.omsorgspenger.auth.Token
 import no.nav.omsorgspenger.config.ServiceUser
 
 internal class PdlClient(
@@ -27,21 +30,32 @@ internal class PdlClient(
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
-    suspend fun hentInfoOmPersoner(identer: Set<String>, correlationId: String, authHeader: String): List<HentPersonResponse> {
-        return identer.map {
-            hentInfoOmPerson(it, correlationId, authHeader)
+    internal suspend fun hentInfoOmPersoner(
+        identitetsnummer: Set<String>,
+        correlationId: String,
+        token: Token): List<HentPersonResponse> {
+        return identitetsnummer.map {
+            hentInfoOmPerson(it, correlationId, token)
         }
     }
 
-    private suspend fun hentInfoOmPerson(ident: String, correlationId: String, authHeader: String): HentPersonResponse {
+    private suspend fun hentInfoOmPerson(
+        identitetsnummer: String,
+        correlationId: String,
+        token: Token) : HentPersonResponse {
         return httpClient.post<HttpStatement>(pdlBaseUrl) {
-            header(HttpHeaders.Authorization, authHeader)
             header("Nav-Consumer-Id", serviceUser.username)
             header("Nav-Call-Id", correlationId)
             header("TEMA", "OMS")
+            if (token is OpenAmToken) {
+                header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(scopes).asAuthoriationHeader())
+                header(OpenAmTokenHeader, token.authorizationHeader())
+            } else {
+                header(HttpHeaders.Authorization, token.authorizationHeader())
+            }
             accept(ContentType.Application.Json)
             contentType(ContentType.Application.Json)
-            body = hentPersonInfoQuery(ident)
+            body = hentPersonInfoQuery(identitetsnummer)
         }.receive()
     }
 
