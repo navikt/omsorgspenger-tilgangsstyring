@@ -32,7 +32,7 @@ internal class PersonTilgangService(
         ).also { cache.put(cacheKey, it) }
     }
 
-    internal suspend fun sjekkTilgangMotPdl(
+    private suspend fun sjekkTilgangMotPdl(
         identitetsnummer: Set<String>,
         correlationId: String,
         token: Token): Boolean {
