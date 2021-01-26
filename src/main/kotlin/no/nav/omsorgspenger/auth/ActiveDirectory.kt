@@ -37,8 +37,8 @@ internal class ActiveDirectoryService(
             "0000-GA-k9-veileder" to Gruppe.Veileder,
             "0000-GA-k9-beslutter" to Gruppe.Beslutter,
             "0000-GA-k9-oppgavestyrer" to Gruppe.Oppgavestyrer,
-            "0000-GA-k9-overstyrer" to Gruppe.Overstyrer)
-            //"0000-GA-k9-drift" // TODO: https://github.com/navikt/omsorgspenger-tilgangsstyring/issues/8
+            "0000-GA-k9-overstyrer" to Gruppe.Overstyrer,
+            "0000-GA-k9-drift" to Gruppe.Drift)
         .mapKeys { it.key.toUpperCase() }
         .also { require(it.values.containsAll(Gruppe.values().toList())) }
     }

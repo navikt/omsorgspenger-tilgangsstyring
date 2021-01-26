@@ -44,6 +44,6 @@ enum class Gruppe {
     Veileder,
     Beslutter,
     Oppgavestyrer,
-    Overstyrer
-    //Drift TODO: https://github.com/navikt/omsorgspenger-tilgangsstyring/issues/8
+    Overstyrer,
+    Drift
 }
