@@ -4,6 +4,7 @@ val dusseldorfVersion = "1.5.0.ae98b7c"
 val ktorVersion = ext.get("ktorVersion").toString()
 val junitJupiterVersion = "5.7.0"
 val assertJVersion = "3.18.1"
+val mockkVersion = "1.10.5"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
@@ -35,6 +36,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
 repositories {

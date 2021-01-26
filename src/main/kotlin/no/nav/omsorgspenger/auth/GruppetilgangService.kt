@@ -22,6 +22,21 @@ internal class GruppetilgangService(
     }
 
     private val måVæreMedlemAvEnAv = mapOf(
-        Operasjon.Visning to Gruppe.values().toSet()
+        Operasjon.Visning to setOf(
+            Gruppe.Saksbehandler,
+            Gruppe.Overstyrer,
+            Gruppe.Beslutter,
+            Gruppe.Oppgavestyrer,
+            Gruppe.Veileder,
+            Gruppe.Drift
+        ),
+        Operasjon.Endring to setOf(
+            Gruppe.Saksbehandler,
+            Gruppe.Overstyrer,
+            Gruppe.Beslutter
+        ),
+        Operasjon.Unntakshåndtering to setOf(
+            Gruppe.Drift
+        )
     )
 }

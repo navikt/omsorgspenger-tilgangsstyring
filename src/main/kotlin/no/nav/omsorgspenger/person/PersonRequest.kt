@@ -1,7 +1,9 @@
 package no.nav.omsorgspenger.person
 
 enum class Operasjon {
-    Visning
+    Visning,
+    Endring,
+    Unntakshåndtering
 }
 
 data class PersonerRequestBody(
