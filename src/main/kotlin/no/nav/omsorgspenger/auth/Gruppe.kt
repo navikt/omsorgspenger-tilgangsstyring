@@ -22,7 +22,6 @@ internal class GruppeResolver(
         it in jwt.claims.getValue("groups").asArray(String::class.java)
     }.keys
 
-    // TODO: https://github.com/navikt/omsorgspenger-tilgangsstyring/issues/9
     private suspend fun OpenAmToken.resolve(correlationId: String) = activeDirectoryService.memberOf(
         token = this,
         correlationId = correlationId
