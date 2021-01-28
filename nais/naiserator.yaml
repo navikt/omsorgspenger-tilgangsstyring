@@ -17,6 +17,7 @@ spec:
       rules:
         - application: omsorgspenger-sak
         - application: omsorgspenger-rammemeldinger
+        - application: omsorgsdager
     outbound:
       external:
         - host: {{proxyHost}}
