@@ -1,10 +1,5 @@
 {
-  "app": "omsorgspenger-tilgangsstyring",
   "cluster": "prod-gcp",
-  "namespace": "omsorgspenger",
-  "team": "omsorgspenger",
-  "minReplicas": "2",
-  "maxReplicas": "4",
   "azureTenant": "nav.no",
   "proxyHost": "omsorgspenger-proxy.prod-fss-pub.nais.io",
   "ingresses": [

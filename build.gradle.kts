@@ -1,20 +1,21 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "1.5.0.ae98b7c"
-val ktorVersion = ext.get("ktorVersion").toString()
-val junitJupiterVersion = "5.7.0"
-val assertJVersion = "3.18.1"
-val mockkVersion = "1.10.5"
+val dusseldorfVersion = "1.5.3.9b6aed3"
+val ktorVersion = "1.5.3"
+val junitJupiterVersion = "5.7.1"
+val assertJVersion = "3.19.0"
+val mockkVersion = "1.11.0"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.4.32"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
-buildscript {
-    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/ae98b7cfa4b75bf15d8d5bb5a7e19a7432b69c47/gradle/dusseldorf-ktor.gradle.kts")
+java {
+    sourceCompatibility = JavaVersion.VERSION_15
+    targetCompatibility = JavaVersion.VERSION_15
 }
 
 dependencies {
@@ -50,29 +51,38 @@ repositories {
         }
     }
     mavenCentral()
-    jcenter()
-    maven("https://dl.bintray.com/kotlin/ktor")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        events("passed", "skipped", "failed")
+tasks {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "15"
     }
-}
 
-tasks.withType<ShadowJar> {
-    archiveBaseName.set("app")
-    archiveClassifier.set("")
-    manifest {
-        attributes(
-            mapOf(
-                "Main-Class" to mainClass
+    named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileTestKotlin") {
+        kotlinOptions.jvmTarget = "15"
+    }
+
+    withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+
+    withType<ShadowJar> {
+        archiveBaseName.set("app")
+        archiveClassifier.set("")
+        manifest {
+            attributes(
+                mapOf(
+                    "Main-Class" to mainClass
+                )
             )
-        )
+        }
     }
-}
 
-tasks.withType<Wrapper> {
-    gradleVersion = "6.8.1"
+
+    withType<Wrapper> {
+        gradleVersion = "7.0"
+    }
 }
