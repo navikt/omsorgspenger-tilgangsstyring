@@ -1,10 +1,10 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: {{app}}
-  namespace: {{namespace}}
+  name: omsorgspenger-tilgangsstyring
+  namespace: omsorgspenger
   labels:
-    team: {{team}}
+    team: omsorgspenger
 spec:
   image: {{ image }}
   port: 8080
@@ -43,8 +43,8 @@ spec:
      - {{url}}
   {{/each}}
   replicas:
-    min: {{minReplicas}}
-    max: {{maxReplicas}}
+    min: 2
+    max: 4
     cpuThresholdPercentage: 90
   secureLogs:
     enabled: true
