@@ -39,10 +39,10 @@ jobs:
 
       - name: Bygg & last opp Docker image
         run: |
-          docker build --pull --tag ${DOCKER_IMAGE}:${TAG} --tag ${DOCKER_IMAGE}:latest .
-          echo ${GITHUB_TOKEN} | docker login --username ${GITHUB_REPOSITORY} --password-stdin ghcr.io
-          docker push ${DOCKER_IMAGE}:${TAG}
-          docker push ${DOCKER_IMAGE}:latest
+          docker build --pull --tag ${BASE_IMAGE}:${TAG} --tag ${BASE_IMAGE}:latest .
+          echo ${BASE_IMAGE} | docker login --username ${GITHUB_REPOSITORY} --password-stdin ghcr.io
+          docker push ${BASE_IMAGE}:${TAG}
+          docker push ${BASE_IMAGE}:latest
 
       - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v1
