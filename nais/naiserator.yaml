@@ -18,6 +18,9 @@ spec:
         - application: omsorgspenger-sak
         - application: omsorgspenger-rammemeldinger
         - application: omsorgsdager
+        - application: k9-aarskvantum
+          namespace: default
+          cluster: {{clusterFss}}
     outbound:
       external:
         - host: {{proxyHost}}
