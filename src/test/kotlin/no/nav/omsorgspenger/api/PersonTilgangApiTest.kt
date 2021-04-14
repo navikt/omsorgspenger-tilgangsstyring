@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.person
+package no.nav.omsorgspenger.api
 
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod

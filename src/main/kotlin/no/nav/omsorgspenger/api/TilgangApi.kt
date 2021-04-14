@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.person
+package no.nav.omsorgspenger.api
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
@@ -9,14 +9,15 @@ import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
-import no.nav.omsorgspenger.auth.GruppetilgangService
+import no.nav.omsorgspenger.gruppe.GruppetilgangService
 import no.nav.omsorgspenger.auth.TokenResolver
+import no.nav.omsorgspenger.person.PersonTilgangService
 import no.nav.omsorgspenger.secureLog
 import org.slf4j.LoggerFactory
 
-private val logger = LoggerFactory.getLogger("no.nav.omsorgspenger.person.PersonTilgangApi")
+private val logger = LoggerFactory.getLogger("no.nav.omsorgspenger.api.TilgangApi")
 
-internal fun Route.PersonTilgangApi(
+internal fun Route.TilgangApi(
     tokenResolver: TokenResolver,
     personTilgangService: PersonTilgangService,
     gruppetilgangService: GruppetilgangService) {
@@ -41,7 +42,7 @@ internal fun Route.PersonTilgangApi(
         }
 
         val (identitetsnummer, operasjon, beskrivelse) = kotlin.runCatching {
-            call.receive<PersonerRequestBody>()
+            call.receive<TilgangRequest>()
         }.fold(
             onSuccess = { requestBody -> requestBody },
             onFailure = { ex ->

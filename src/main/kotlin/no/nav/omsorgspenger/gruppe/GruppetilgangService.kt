@@ -1,6 +1,7 @@
-package no.nav.omsorgspenger.auth
+package no.nav.omsorgspenger.gruppe
 
-import no.nav.omsorgspenger.person.Operasjon
+import no.nav.omsorgspenger.auth.Token
+import no.nav.omsorgspenger.api.Operasjon
 import no.nav.omsorgspenger.secureLog
 
 internal class GruppetilgangService(

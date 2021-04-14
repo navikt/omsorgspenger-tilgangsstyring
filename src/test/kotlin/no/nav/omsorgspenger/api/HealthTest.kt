@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger
+package no.nav.omsorgspenger.api
 
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode

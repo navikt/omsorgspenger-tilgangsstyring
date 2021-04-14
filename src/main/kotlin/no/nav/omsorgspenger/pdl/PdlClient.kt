@@ -15,7 +15,7 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
-import no.nav.omsorgspenger.auth.ActiveDirectoryGateway.Companion.OpenAmTokenHeader
+import no.nav.omsorgspenger.gruppe.ActiveDirectoryGateway.Companion.OpenAmTokenHeader
 import no.nav.omsorgspenger.auth.OpenAmToken
 import no.nav.omsorgspenger.auth.Token
 import no.nav.omsorgspenger.config.ServiceUser

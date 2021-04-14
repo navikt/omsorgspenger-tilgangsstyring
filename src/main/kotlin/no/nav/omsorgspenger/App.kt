@@ -28,14 +28,14 @@ import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
-import no.nav.omsorgspenger.auth.ActiveDirectoryGateway
-import no.nav.omsorgspenger.auth.ActiveDirectoryService
-import no.nav.omsorgspenger.auth.GruppeResolver
-import no.nav.omsorgspenger.auth.GruppetilgangService
+import no.nav.omsorgspenger.api.TilgangApi
+import no.nav.omsorgspenger.gruppe.ActiveDirectoryGateway
+import no.nav.omsorgspenger.gruppe.ActiveDirectoryService
+import no.nav.omsorgspenger.gruppe.GruppeResolver
+import no.nav.omsorgspenger.gruppe.GruppetilgangService
 import no.nav.omsorgspenger.auth.TokenResolver
 import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.pdl.PdlClient
-import no.nav.omsorgspenger.person.PersonTilgangApi
 import no.nav.omsorgspenger.person.PersonTilgangService
 import org.slf4j.event.Level
 import java.net.URI
@@ -120,7 +120,7 @@ fun Application.app() {
         MetricsRoute()
         DefaultProbeRoutes()
         authenticate(*issuers.allIssuers()) {
-            PersonTilgangApi(
+            TilgangApi(
                 personTilgangService = PersonTilgangService(
                     pdlClient = pdlClient
                 ),

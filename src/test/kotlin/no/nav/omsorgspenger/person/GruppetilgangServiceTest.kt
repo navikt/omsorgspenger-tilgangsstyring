@@ -7,7 +7,11 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.dusseldorf.testsupport.jws.AnyIssuer
+import no.nav.omsorgspenger.api.Operasjon
 import no.nav.omsorgspenger.auth.*
+import no.nav.omsorgspenger.gruppe.Gruppe
+import no.nav.omsorgspenger.gruppe.GruppeResolver
+import no.nav.omsorgspenger.gruppe.GruppetilgangService
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
