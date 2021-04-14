@@ -51,8 +51,6 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
-  envFrom:
-    - secret: omsorgspenger-tilgangsstyring-srvusercredentials
   env:
   {{#each env}}
     - name: {{@key}}
