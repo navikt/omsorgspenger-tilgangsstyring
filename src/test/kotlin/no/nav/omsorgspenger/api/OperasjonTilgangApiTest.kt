@@ -25,10 +25,20 @@ internal class OperasjonTilgangApiTest(
 
     @Test
     fun `Driftsperson forsøker å gjøre unntakshåndtering`() {
+        // identitetsnummer ikke satt i det hele tatt.
         with(testApplicationEngine) {
             assertRequest(
                 grupper = setOf("Drift"),
                 operasjon = Operasjon.Unntakshåndtering,
+                forventetStatusCode = HttpStatusCode.NoContent
+            )
+        }
+        // identitetsnummer tom liste
+        with(testApplicationEngine) {
+            assertRequest(
+                grupper = setOf("Drift"),
+                operasjon = Operasjon.Unntakshåndtering,
+                jsonBody = """{"operasjon": "${Operasjon.Unntakshåndtering}","beskrivelse": "noe spennende", "identitetsnummer": []}""",
                 forventetStatusCode = HttpStatusCode.NoContent
             )
         }
