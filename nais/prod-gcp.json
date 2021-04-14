@@ -1,5 +1,6 @@
 {
   "cluster": "prod-gcp",
+  "clusterFss": "prod-fss",
   "azureTenant": "nav.no",
   "proxyHost": "omsorgspenger-proxy.prod-fss-pub.nais.io",
   "ingresses": [

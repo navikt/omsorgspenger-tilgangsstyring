@@ -15,15 +15,13 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
-import no.nav.omsorgspenger.auth.ActiveDirectoryGateway.Companion.OpenAmTokenHeader
+import no.nav.omsorgspenger.gruppe.ActiveDirectoryGateway.Companion.OpenAmTokenHeader
 import no.nav.omsorgspenger.auth.OpenAmToken
 import no.nav.omsorgspenger.auth.Token
-import no.nav.omsorgspenger.config.ServiceUser
 
 internal class PdlClient(
     private val pdlBaseUrl: String,
     accessTokenClient: AccessTokenClient,
-    private val serviceUser: ServiceUser,
     private val httpClient: HttpClient,
     private val scopes: Set<String>
 ) : HealthCheck {
@@ -44,7 +42,7 @@ internal class PdlClient(
         correlationId: String,
         token: Token) : HentPersonResponse {
         return httpClient.post<HttpStatement>(pdlBaseUrl) {
-            header("Nav-Consumer-Id", serviceUser.username)
+            header("Nav-Consumer-Id", "srv-oms-tilgang")
             header("Nav-Call-Id", correlationId)
             header("TEMA", "OMS")
             if (token is OpenAmToken) {

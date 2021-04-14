@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.person
+package no.nav.omsorgspenger.api
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import io.ktor.http.*

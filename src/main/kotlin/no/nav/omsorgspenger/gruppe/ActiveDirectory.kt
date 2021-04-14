@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.auth
+package no.nav.omsorgspenger.gruppe
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -8,14 +8,15 @@ import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpGet
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.readTextOrThrow
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
+import no.nav.omsorgspenger.auth.OpenAmToken
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URI
 import java.time.Duration
 
-
 internal class ActiveDirectoryService(
     private val activeDirectoryGateway: ActiveDirectoryGateway) {
+
     private val cache: Cache<String, Set<Gruppe>> = Caffeine.newBuilder()
         .expireAfterWrite(Duration.ofMinutes(15))
         .maximumSize(100)
@@ -38,7 +39,8 @@ internal class ActiveDirectoryService(
             "0000-GA-k9-beslutter" to Gruppe.Beslutter,
             "0000-GA-k9-oppgavestyrer" to Gruppe.Oppgavestyrer,
             "0000-GA-k9-overstyrer" to Gruppe.Overstyrer,
-            "0000-GA-k9-drift" to Gruppe.Drift)
+            "0000-GA-k9-drift" to Gruppe.Drift
+        )
         .mapKeys { it.key.toUpperCase() }
         .also { require(it.values.containsAll(Gruppe.values().toList())) }
     }

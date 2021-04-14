@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.person
+package no.nav.omsorgspenger.api
 
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -20,8 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestApplicationExtension::class)
 internal class PersonTilgangApiTest(
-    private val testApplicationEngine: TestApplicationEngine
-) {
+    private val testApplicationEngine: TestApplicationEngine) {
+
     @Test
     fun `Gir 204 ved oppgitt identitetsnummer og operasjon`() {
         with(testApplicationEngine) {
@@ -62,6 +62,49 @@ internal class PersonTilgangApiTest(
                 setBody(jsonBody)
             }.apply {
                 assertThat(response.status()).isEqualTo(HttpStatusCode.NoContent)
+            }
+        }
+    }
+
+    @Test
+    fun `Gir 500 ved ugyldig format på identitetsnummer`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Overstyrer", "UkjentGruppe"))}")
+                @Language("JSON")
+                val jsonBody = """
+                    {
+                      "identitetsnummer": ["1111111111", "1111111111111111111111111111111"],
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp saksnummer"
+                    }
+                """.trimIndent()
+                setBody(jsonBody)
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.InternalServerError)
+            }
+        }
+    }
+
+    @Test
+    fun `Gir 500 om identitetsnummer mangler`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Overstyrer", "UkjentGruppe"))}")
+                @Language("JSON")
+                val jsonBody = """
+                    {
+                      "operasjon": "${Operasjon.Visning}",
+                      "beskrivelse": "slå opp saksnummer"
+                    }
+                """.trimIndent()
+                setBody(jsonBody)
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.InternalServerError)
             }
         }
     }
@@ -222,7 +265,7 @@ internal class PersonTilgangApiTest(
     }
 }
 
-private fun gyldigToken(
+internal fun gyldigToken(
     grupper: Set<String>
 ) = Azure.V2_0.generateJwt(
     clientId = "any",

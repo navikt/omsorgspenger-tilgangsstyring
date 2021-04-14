@@ -1,11 +1,15 @@
-package no.nav.omsorgspenger.auth
+package no.nav.omsorgspenger.gruppe
 
+import no.nav.omsorgspenger.auth.AzureToken
+import no.nav.omsorgspenger.auth.OpenAmToken
+import no.nav.omsorgspenger.auth.Token
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 
 internal class GruppeResolver(
     azureGroupMappingPath: String,
     private val activeDirectoryService: ActiveDirectoryService) {
+
     private val azureGroupMapping = azureGroupMappingPath.groupMappingFromResources()
 
     init {

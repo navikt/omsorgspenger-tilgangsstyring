@@ -1,5 +1,6 @@
 {
   "cluster": "dev-gcp",
+  "clusterFss": "dev-fss",
   "azureTenant": "trygdeetaten.no",
   "proxyHost": "omsorgspenger-proxy.dev-fss-pub.nais.io",
   "ingresses": [
