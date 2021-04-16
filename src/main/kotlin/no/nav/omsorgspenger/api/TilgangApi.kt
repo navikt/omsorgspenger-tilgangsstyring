@@ -22,16 +22,6 @@ internal fun Route.TilgangApi(
     personTilgangService: PersonTilgangService,
     gruppetilgangService: GruppetilgangService) {
 
-    fun Pair<ApplicationCall, Set<String>>.sjekkTilgangTilPersoner() : Boolean {
-        val sjekkTilgangTilpersoner = first.request.path() == "/api/tilgang/personer"
-        if (sjekkTilgangTilpersoner) { require(second.isNotEmpty()) {
-            "Må sendes med minst et identitetsnummer når det gjøres tilgangssjekk på personer."
-        }} else { require(second.isEmpty()) {
-            "Kan ikke sendes med noen identitetsnummer når det gjøres tilgangssjekk kun på operasjon."
-        }}
-        return sjekkTilgangTilpersoner
-    }
-
     post("/api/tilgang{...}") {
         val (_, token) = tokenResolver.resolve(call) ?: return@post call.respond(HttpStatusCode.Unauthorized)
         val correlationId = call.request.headers[HttpHeaders.XCorrelationId] ?: return@post call.respond(HttpStatusCode.BadRequest)
@@ -57,9 +47,7 @@ internal fun Route.TilgangApi(
             }
         )
 
-        val sjekkTilgangTilPersoner = (call to identitetsnummer).sjekkTilgangTilPersoner()
-
-        val secureLogMessage = if (sjekkTilgangTilPersoner) {
+        val secureLogMessage = if (identitetsnummer.isNotEmpty()) {
             "Personen ${token.username} ønsker å $beskrivelse ($operasjon) for identitetsnummer $identitetsnummer"
         } else {
             "Personen ${token.username} ønsker å $beskrivelse ($operasjon)"
@@ -70,7 +58,8 @@ internal fun Route.TilgangApi(
             return@post call.respond(HttpStatusCode.Forbidden)
         }
 
-        if (!sjekkTilgangTilPersoner) {
+        if (identitetsnummer.isEmpty()) {
+            logger.info("Ingen identitetsnummer å gjøre tilganssjekk på.")
             secureLog("Innvilget: $secureLogMessage")
             return@post call.respond(HttpStatusCode.NoContent)
         }

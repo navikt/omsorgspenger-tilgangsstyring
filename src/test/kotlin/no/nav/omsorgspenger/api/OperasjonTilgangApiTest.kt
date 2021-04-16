@@ -44,18 +44,6 @@ internal class OperasjonTilgangApiTest(
         }
     }
 
-    @Test
-    fun `Sende med identetsnummer gir 500 feil`() {
-        with(testApplicationEngine) {
-            assertRequest(
-                grupper = setOf("Drift"),
-                operasjon = Operasjon.Unntakshåndtering,
-                forventetStatusCode = HttpStatusCode.InternalServerError,
-                jsonBody = """{"operasjon": "${Operasjon.Unntakshåndtering}","beskrivelse": "noe spennende", "identitetsnummer": ["11111111111"]}"""
-            )
-        }
-    }
-
     private companion object {
         private fun TestApplicationEngine.assertRequest(
             grupper: Set<String>,

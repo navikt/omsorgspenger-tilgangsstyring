@@ -89,27 +89,6 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    fun `Gir 500 om identitetsnummer mangler`() {
-        with(testApplicationEngine) {
-            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
-                addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader(HttpHeaders.XCorrelationId, "id")
-                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Overstyrer", "UkjentGruppe"))}")
-                @Language("JSON")
-                val jsonBody = """
-                    {
-                      "operasjon": "${Operasjon.Visning}",
-                      "beskrivelse": "slå opp saksnummer"
-                    }
-                """.trimIndent()
-                setBody(jsonBody)
-            }.apply {
-                assertThat(response.status()).isEqualTo(HttpStatusCode.InternalServerError)
-            }
-        }
-    }
-
-    @Test
     fun `Gir 403 om man ikke har rett gruppe`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
@@ -167,7 +146,7 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
-    internal fun `Gir 401 dersom token ikke er satt`() {
+    fun `Gir 401 dersom token ikke er satt`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
