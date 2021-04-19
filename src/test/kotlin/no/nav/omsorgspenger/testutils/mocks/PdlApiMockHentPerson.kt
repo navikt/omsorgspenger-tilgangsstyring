@@ -79,7 +79,12 @@ private fun WireMockServer.stubPdlApiHentPersonWithError(error: String, identite
                                   ],
                                   "extensions": {
                                     "code": "$error",
-                                    "classification": "ExecutionAborted"
+                                    "classification": "ExecutionAborted",
+                                    "details": {
+                                        "type": "abac-deny",
+                                        "cause": "cause-0001-manglerrolle",
+                                        "policy": "skjermede_navansatte_og_familiemedlemmer"
+                                    }
                                   }
                                 }
                               ],
