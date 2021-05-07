@@ -83,13 +83,13 @@ fun Application.app() {
         tokenEndpoint = URI(azureConfig.property("token_endpoint").getString())
     )
 
-    val omsorgspengerProxyScopes = setOf(environment.config.property("nav.omsorgspenger_proxy.scope").getString())
+    val pdlScopes = setOf(environment.config.property("nav.omsorgspenger_proxy.scope").getString())
 
     val pdlClient = PdlClient(
         pdlBaseUrl = pdlConfig.property("pdl_base_url").getString(),
         accessTokenClient = accessTokenClient,
         httpClient = httpClient,
-        scopes = omsorgspengerProxyScopes
+        scopes = pdlScopes
     )
     val healthService = HealthService(
         setOf(
@@ -126,7 +126,7 @@ fun Application.app() {
                             activeDirectoryGateway = ActiveDirectoryGateway(
                                 memberOfUrl = URI(environment.config.getRequiredString("nav.omsorgspenger_proxy.member_of_uri", secret = false)),
                                 accessTokenClient = accessTokenClient,
-                                scopes = omsorgspengerProxyScopes
+                                scopes = setOf(environment.config.property("nav.omsorgspenger_proxy.scope").getString())
                             )
                         )
                     )

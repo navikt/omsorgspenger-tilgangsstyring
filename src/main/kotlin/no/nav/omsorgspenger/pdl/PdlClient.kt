@@ -42,11 +42,11 @@ internal class PdlClient(
         correlationId: String,
         token: Token) : HentPersonResponse {
         return httpClient.post<HttpStatement>(pdlBaseUrl) {
-            header("Nav-Consumer-Id", "srv-oms-tilgang")
             header("Nav-Call-Id", correlationId)
             header("TEMA", "OMS")
             if (token is OpenAmToken) {
                 header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(scopes).asAuthoriationHeader())
+                header("Nav-Consumer-Id", "srv-oms-tilgang")
                 header(OpenAmTokenHeader, token.authorizationHeader())
             } else {
                 header(HttpHeaders.Authorization, token.authorizationHeader())
