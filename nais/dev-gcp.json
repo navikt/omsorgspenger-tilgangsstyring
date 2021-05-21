@@ -2,19 +2,21 @@
   "cluster": "dev-gcp",
   "clusterFss": "dev-fss",
   "azureTenant": "trygdeetaten.no",
-  "proxyHost": "omsorgspenger-proxy.dev-fss-pub.nais.io",
+  "externalHosts": [
+    "pdl-api.dev-fss-pub.nais.io",
+    "omsorgspenger-proxy.dev-fss-pub.nais.io"
+  ],
   "ingresses": [
     "https://omsorgspenger-tilgangsstyring.dev.intern.nav.no"
   ],
   "env": {
-    "OMSORGPENGER_PROXY_SCOPE": "824525c6-74df-47fc-8892-444e5f8506de/.default",
-    "AZURE_V2_JWKS_URI": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/discovery/v2.0/keys",
-    "AZURE_V2_ISSUER": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0",
-    "PDL_BASE_URL": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/pdl/graphql",
-    "AZURE_APP_TOKEN_ENDPOINT": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
-    "AZURE_GRUPPEMAPPING_RESOURCE_PATH": "azureGruppeMapping/preprod.json",
+    "OMSORGSPENGER_PROXY_SCOPES": "824525c6-74df-47fc-8892-444e5f8506de/.default",
+    "OMSORGSPENGER_PROXY_PDL_BASE_URL": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/pdl",
+    "OMSORGSPENGER_PROXY_MEMBER_OF_URI": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/active-directory/me/memberOf",
     "OPEN_AM_JWKS_URI": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/open-am/keys",
     "OPEN_AM_ISSUER": "https://isso-q.adeo.no:443/isso/oauth2",
-    "MEMBER_OF_URI": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/active-directory/me/memberOf"
+    "AZURE_GRUPPEMAPPING_RESOURCE_PATH": "azureGruppeMapping/preprod.json",
+    "PDL_BASE_URL": "https://pdl-api.dev-fss-pub.nais.io",
+    "PDL_SCOPES": "api://dev-fss.pdl.pdl-api/.default"
   }
 }
