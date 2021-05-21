@@ -37,7 +37,7 @@ internal class MockedEnvironment(
         appConfig["nav.pdl.scopes"] = "pdl/.default"
         appConfig["nav.omsorgspenger_proxy.scopes"] = "omsorgspenger-proxy/.default"
         appConfig["nav.omsorgspenger_proxy.member_of_uri"] = wireMockServer.memberOfUri()
-        appConfig["nav.omsorgspenger_proxy.pdl_base_url"] = wireMockServer.memberOfUri()
+        appConfig["nav.omsorgspenger_proxy.pdl_base_url"] = wireMockServer.pdlApiBaseUrl()
         appConfig["nav.azure_gruppemapping_resource_path"] = "azureGruppeMapping/test.json"
     }
 
