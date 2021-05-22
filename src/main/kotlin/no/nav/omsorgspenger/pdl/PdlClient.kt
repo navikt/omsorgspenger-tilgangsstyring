@@ -6,6 +6,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpGet
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpOptions
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.Result
@@ -90,7 +91,7 @@ internal class PdlClient(
         onFailure = { UnHealthy("${navn}AccessTokenCheck", "Feil: ${it.message}") }
     )
 
-    private suspend fun pingCheck(navn: String, pdl: Pair<URI, Set<String>>) : Result = pdl.first.graphQl().httpGet {
+    private suspend fun pingCheck(navn: String, pdl: Pair<URI, Set<String>>) : Result = pdl.first.graphQl().httpOptions {
         it.header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(pdl.second))
     }.second.fold(
         onSuccess = { when (it.status.isSuccess()) {
