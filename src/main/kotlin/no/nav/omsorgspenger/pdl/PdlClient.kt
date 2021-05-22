@@ -92,7 +92,9 @@ internal class PdlClient(
     )
 
     private suspend fun pingCheck(navn: String, pdl: Pair<URI, Set<String>>) : Result = pdl.first.graphQl().httpOptions {
-        it.header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(pdl.second))
+        it.header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(
+            scopes = pdl.second
+        ).asAuthoriationHeader())
     }.second.fold(
         onSuccess = { when (it.status.isSuccess()) {
             true -> Healthy("${navn}PingCheck", "OK: ${it.readText()}")
