@@ -23,7 +23,9 @@ spec:
           cluster: {{clusterFss}}
     outbound:
       external:
-        - host: {{proxyHost}}
+      {{#each externalHosts as |host|}}
+         - host: {{host}}
+      {{/each}}
   liveness:
     path: isalive
     initialDelay: 20

@@ -1,16 +1,16 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "1.5.3.9b6aed3"
-val ktorVersion = "1.5.3"
-val junitJupiterVersion = "5.7.1"
+val dusseldorfVersion = "1.5.4.257334d"
+val ktorVersion = "1.5.4"
+val junitJupiterVersion = "5.7.2"
 val assertJVersion = "3.19.0"
 val mockkVersion = "1.11.0"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.4.32"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    kotlin("jvm") version "1.5.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 java {
@@ -35,7 +35,9 @@ dependencies {
         exclude(group = "org.eclipse.jetty")
     }
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-    testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
+    testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion") {
+        exclude(group = "com.github.jknack")
+    }
     testImplementation("org.assertj:assertj-core:$assertJVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
@@ -83,6 +85,6 @@ tasks {
 
 
     withType<Wrapper> {
-        gradleVersion = "7.0"
+        gradleVersion = "7.0.2"
     }
 }

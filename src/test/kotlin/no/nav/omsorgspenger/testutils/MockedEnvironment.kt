@@ -33,12 +33,11 @@ internal class MockedEnvironment(
         appConfig["nav.auth.azure.client_id"] = "omsorgspenger-tilgangsstyring"
         appConfig["nav.auth.azure.client_secret"] = "anything"
         appConfig["nav.auth.azure.token_endpoint"] = wireMockServer.getAzureV2TokenUrl()
-        appConfig["nav.pdl.pdl_base_url"] = wireMockServer.pdlApiBaseUrl()
-        appConfig["nav.pdl.pdl_api_gw_key"] = "testPdlApiKey"
-        appConfig["nav.service_user.srv_username"] = "test_username"
-        appConfig["nav.service_user.srv_password"] = "test_pw"
-        appConfig["nav.omsorgspenger_proxy.scope"] = "anyhting/.default"
+        appConfig["nav.pdl.base_url"] = wireMockServer.pdlApiBaseUrl()
+        appConfig["nav.pdl.scopes"] = "pdl/.default"
+        appConfig["nav.omsorgspenger_proxy.scopes"] = "omsorgspenger-proxy/.default"
         appConfig["nav.omsorgspenger_proxy.member_of_uri"] = wireMockServer.memberOfUri()
+        appConfig["nav.omsorgspenger_proxy.pdl_base_url"] = wireMockServer.pdlApiBaseUrl()
         appConfig["nav.azure_gruppemapping_resource_path"] = "azureGruppeMapping/test.json"
     }
 

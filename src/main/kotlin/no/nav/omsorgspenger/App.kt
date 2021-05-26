@@ -10,6 +10,7 @@ import io.ktor.auth.authenticate
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.config.*
 import io.ktor.features.*
 import io.ktor.jackson.jackson
 import io.ktor.routing.Routing
@@ -36,6 +37,7 @@ import no.nav.omsorgspenger.person.PersonTilgangService
 import java.net.URI
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+private fun ApplicationConfigValue.scopes() = getString().replace(" ", "").split(",").toSet()
 
 @KtorExperimentalAPI
 fun Application.app() {
@@ -71,6 +73,8 @@ fun Application.app() {
 
     val pdlConfig = environment.config.config("nav.pdl")
     val azureConfig = environment.config.config("nav.auth.azure")
+    val omsorgspengerProxyConfig = environment.config.config("nav.omsorgspenger_proxy")
+    val omsorgspengerProxyScopes = omsorgspengerProxyConfig.property("scopes").scopes()
 
     val httpClient = HttpClient {
         install(JsonFeature) {
@@ -83,19 +87,14 @@ fun Application.app() {
         tokenEndpoint = URI(azureConfig.property("token_endpoint").getString())
     )
 
-    val omsorgspengerProxyScopes = setOf(environment.config.property("nav.omsorgspenger_proxy.scope").getString())
-
     val pdlClient = PdlClient(
-        pdlBaseUrl = pdlConfig.property("pdl_base_url").getString(),
+        pdlDirect = URI(pdlConfig.property("base_url").getString()) to pdlConfig.property("scopes").scopes(),
+        pdlProxy = URI(omsorgspengerProxyConfig.property("pdl_base_url").getString()) to omsorgspengerProxyScopes,
         accessTokenClient = accessTokenClient,
-        httpClient = httpClient,
-        scopes = omsorgspengerProxyScopes
+        httpClient = httpClient
     )
-    val healthService = HealthService(
-        setOf(
-            pdlClient
-        )
-    )
+
+    val healthService = HealthService(setOf(pdlClient))
 
     HealthReporter(
         "omsorgspenger-tilgangsstyring",
@@ -124,7 +123,7 @@ fun Application.app() {
                         azureGroupMappingPath = environment.config.getRequiredString("nav.azure_gruppemapping_resource_path", secret = false),
                         activeDirectoryService = ActiveDirectoryService(
                             activeDirectoryGateway = ActiveDirectoryGateway(
-                                memberOfUrl = URI(environment.config.getRequiredString("nav.omsorgspenger_proxy.member_of_uri", secret = false)),
+                                memberOfUrl = URI(omsorgspengerProxyConfig.property("member_of_uri").getString()),
                                 accessTokenClient = accessTokenClient,
                                 scopes = omsorgspengerProxyScopes
                             )
