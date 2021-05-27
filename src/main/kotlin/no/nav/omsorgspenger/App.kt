@@ -84,7 +84,8 @@ fun Application.app() {
     val accessTokenClient = ClientSecretAccessTokenClient(
         clientId = azureConfig.property("client_id").getString(),
         clientSecret = azureConfig.property("client_secret").getString(),
-        tokenEndpoint = URI(azureConfig.property("token_endpoint").getString())
+        tokenEndpoint = URI(azureConfig.property("token_endpoint").getString()),
+        authenticationMode = ClientSecretAccessTokenClient.AuthenticationMode.POST
     )
 
     val pdlClient = PdlClient(

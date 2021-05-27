@@ -25,6 +25,8 @@ internal class MockedEnvironment(
 
     init {
         appConfig["nav.auth.issuers.0.alias"] = "azure-v2"
+        appConfig["nav.auth.issuers.0.type"] = "azure"
+        appConfig["nav.auth.issuers.0.audience"] = "omsorgspenger-tilgangsstyring"
         appConfig["nav.auth.issuers.0.jwks_uri"] = wireMockServer.getAzureV2JwksUrl()
         appConfig["nav.auth.issuers.0.issuer"] = Azure.V2_0.getIssuer()
         appConfig["nav.auth.issuers.1.alias"] = "open-am"

@@ -157,6 +157,18 @@ internal class PersonTilgangApiTest(
     }
 
     @Test
+    fun `Gir 403 dersom token har feil audience`() {
+        with(testApplicationEngine) {
+            handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Beslutter"), audience = "any")}")
+            }.apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.Forbidden)
+            }
+        }
+    }
+
+    @Test
     fun `Gir 403 dersom token ikke er utstedt til en personbruker`() {
         val tokenUtenPersonbrukerClaims = Azure.V2_0.generateJwt(
             clientId = "any",
@@ -245,11 +257,12 @@ internal class PersonTilgangApiTest(
 }
 
 internal fun gyldigToken(
-    grupper: Set<String>
+    grupper: Set<String>,
+    audience : String = "omsorgspenger-tilgangsstyring"
 ) = Azure.V2_0.generateJwt(
     clientId = "any",
     clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,
-    audience = "any",
+    audience = audience,
     groups = grupper,
     overridingClaims = mapOf(
         "oid" to "any",
