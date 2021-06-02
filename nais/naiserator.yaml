@@ -16,7 +16,7 @@ spec:
         extra:
           - "NAVident"
         groups:
-        {{#each azureGruppe as |gruppe|}}
+        {{#each azureGrupper as |gruppe|}}
            - id: {{gruppe}}
   accessPolicy:
     inbound:
