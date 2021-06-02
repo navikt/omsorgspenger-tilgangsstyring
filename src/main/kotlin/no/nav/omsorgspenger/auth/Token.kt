@@ -35,18 +35,20 @@ internal class AzureToken private constructor(
     override val jwt: DecodedJWT,
     override val clientId: String,
     private val oid: String?,
-    private val preferredUsername: String?
+    private val preferredUsername: String?,
+    private val navIdent: String?
 ) : Token {
     internal companion object {
         internal fun parse(jwt: DecodedJWT) = AzureToken(
             jwt = jwt,
             clientId = jwt.claims.getValue("azp").asString(),
             oid = jwt.claims["oid"]?.asString(),
-            preferredUsername = jwt.claims["preferred_username"]?.asString()
+            preferredUsername = jwt.claims["preferred_username"]?.asString(),
+            navIdent = jwt.claims["NAVident"]?.asString()
         )
     }
     override val erPersonToken = oid != null && preferredUsername != null
-    override val username = preferredUsername ?: "n/a"
+    override val username = navIdent ?: preferredUsername ?: "n/a"
 }
 
 internal class OpenAmToken private constructor(
