@@ -12,6 +12,12 @@ spec:
     application:
       enabled: true
       tenant: {{azureTenant}}
+      claims:
+        extra:
+          - "NAVident"
+        groups:
+        {{#each azureGruppe as |gruppe|}}
+           - id: {{gruppe}}
   accessPolicy:
     inbound:
       rules:
