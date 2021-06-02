@@ -2,6 +2,14 @@
   "cluster": "prod-gcp",
   "clusterFss": "prod-fss",
   "azureTenant": "nav.no",
+  "azureGrupper": [
+    "466d0df7-22ba-4c68-b848-73478cfd0486",
+    "be11a922-59a2-4afa-b5ad-b9e9bd445268",
+    "f6b0f0bd-3716-4c5a-aa7d-c8b72fdc40b5",
+    "f3743660-4c76-4845-885f-f38ad478645f",
+    "e5f1ba3d-c29f-4b0c-9cb1-b15fc4253fa3",
+    "1509dc91-a955-4e72-b64c-2f049e37c0c6"
+  ],
   "externalHosts": [
     "omsorgspenger-proxy.prod-fss-pub.nais.io",
     "pdl-api.prod-fss-pub.nais.io"

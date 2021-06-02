@@ -2,6 +2,14 @@
   "cluster": "dev-gcp",
   "clusterFss": "dev-fss",
   "azureTenant": "trygdeetaten.no",
+  "azureGrupper": [
+    "93e8903d-5c3f-4cbe-929e-0afeb22dec73",
+    "5bc5cae2-3ef9-4897-9828-766757299de8",
+    "5c7003ff-b3ba-407c-9b58-7fea9bf7cb2e",
+    "dfcd9962-1b94-4b6f-bdac-09dcca355be7",
+    "f171716a-aaab-4e76-8869-047abaebb8f5",
+    "0bc9661c-975c-4adb-86d1-a97172490662"
+  ],
   "externalHosts": [
     "pdl-api.dev-fss-pub.nais.io",
     "omsorgspenger-proxy.dev-fss-pub.nais.io"
