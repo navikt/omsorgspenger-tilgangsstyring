@@ -18,6 +18,7 @@ spec:
         groups:
         {{#each azureGrupper as |gruppe|}}
            - id: {{gruppe}}
+        {{/each}}
   accessPolicy:
     inbound:
       rules:
