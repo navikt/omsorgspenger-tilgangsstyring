@@ -7,7 +7,6 @@ import io.ktor.config.HoconApplicationConfig
 import io.ktor.server.engine.stop
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.createTestEnvironment
-import io.ktor.util.KtorExperimentalAPI
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
@@ -15,10 +14,8 @@ import java.util.concurrent.TimeUnit
 
 internal class TestApplicationExtension : ParameterResolver {
 
-    @KtorExperimentalAPI
     internal companion object {
         private val mockedEnvironment = MockedEnvironment().start()
-        @KtorExperimentalAPI
         internal val testApplicationEngine = TestApplicationEngine(
             environment = createTestEnvironment {
                 config = getConfig(mockedEnvironment.appConfig)
@@ -45,7 +42,6 @@ internal class TestApplicationExtension : ParameterResolver {
         return støttedeParametre.contains(parameterContext.parameter.type)
     }
 
-    @KtorExperimentalAPI
     override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any {
         return when (parameterContext.parameter.type) {
             TestApplicationEngine::class.java -> testApplicationEngine
@@ -54,7 +50,6 @@ internal class TestApplicationExtension : ParameterResolver {
     }
 }
 
-@KtorExperimentalAPI
 private fun getConfig(config: MutableMap<String, String>): ApplicationConfig {
     config.medAppConfig(8083)
     val fileConfig = ConfigFactory.load()

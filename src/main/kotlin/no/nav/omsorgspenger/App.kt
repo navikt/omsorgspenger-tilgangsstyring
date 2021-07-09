@@ -14,7 +14,6 @@ import io.ktor.config.*
 import io.ktor.features.*
 import io.ktor.jackson.jackson
 import io.ktor.routing.Routing
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.auth.AuthStatusPages
 import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.issuers
@@ -39,7 +38,6 @@ import java.net.URI
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 private fun ApplicationConfigValue.scopes() = getString().replace(" ", "").split(",").toSet()
 
-@KtorExperimentalAPI
 fun Application.app() {
     install(ContentNegotiation) {
         jackson()

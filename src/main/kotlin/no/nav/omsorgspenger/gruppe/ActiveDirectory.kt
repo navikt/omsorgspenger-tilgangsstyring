@@ -27,7 +27,7 @@ internal class ActiveDirectoryService(
         return cache.getIfPresent(token.username) ?: activeDirectoryGateway.memberOf(
             token = token,
             correlationId = correlationId)
-            .mapNotNull { adGruppe -> activeDirectoryGruppeMapping[adGruppe.toUpperCase()] }
+            .mapNotNull { adGruppe -> activeDirectoryGruppeMapping[adGruppe.uppercase()] }
             .toSet()
             .also { cache.put(token.username, it) }
     }
@@ -41,7 +41,7 @@ internal class ActiveDirectoryService(
             "0000-GA-k9-overstyrer" to Gruppe.Overstyrer,
             "0000-GA-k9-drift" to Gruppe.Drift
         )
-        .mapKeys { it.key.toUpperCase() }
+        .mapKeys { it.key.uppercase() }
         .also { require(it.values.containsAll(Gruppe.values().toList())) }
     }
 }
