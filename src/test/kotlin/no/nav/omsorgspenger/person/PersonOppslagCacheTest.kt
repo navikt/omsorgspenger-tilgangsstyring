@@ -1,11 +1,11 @@
 package no.nav.omsorgspenger.person
 
 import no.nav.omsorgspenger.person.PersonTilgangService.Companion.personOppslagCache
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 internal class PersonOppslagCacheTest {
 

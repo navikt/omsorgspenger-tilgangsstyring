@@ -12,9 +12,9 @@ import no.nav.omsorgspenger.auth.*
 import no.nav.omsorgspenger.gruppe.Gruppe
 import no.nav.omsorgspenger.gruppe.GruppeResolver
 import no.nav.omsorgspenger.gruppe.GruppetilgangService
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 internal class GruppetilgangServiceTest {
 
