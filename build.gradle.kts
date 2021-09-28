@@ -1,15 +1,15 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "2.1.6.0-1516d10"
-val ktorVersion = "1.6.1"
-val junitJupiterVersion = "5.7.2"
-val assertJVersion = "3.20.2"
+val dusseldorfVersion = "3.1.6.3-bf04e18"
+val ktorVersion = "1.6.3"
+val junitJupiterVersion = "5.8.1"
+val assertJVersion = "3.21.0"
 val mockkVersion = "1.12.0"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.5.20"
+    kotlin("jvm") version "1.5.31"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -85,6 +85,6 @@ tasks {
 
 
     withType<Wrapper> {
-        gradleVersion = "7.1.1"
+        gradleVersion = "7.2"
     }
 }
