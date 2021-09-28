@@ -70,7 +70,7 @@ jobs:
           VARS: nais/dev-gcp.json
 
       - name: Deploy til prod-gcp
-        if: github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'ci skip')
+        if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'ci skip')
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
