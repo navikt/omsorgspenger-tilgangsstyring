@@ -9,7 +9,6 @@ on:
       - 'CODEOWNERS'
 
 env:
-  GITHUB_USERNAME: x-access-token
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -17,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: gradle/wrapper-validation-action@v1
       - uses: actions/setup-java@v3
         with:
           java-version: 17

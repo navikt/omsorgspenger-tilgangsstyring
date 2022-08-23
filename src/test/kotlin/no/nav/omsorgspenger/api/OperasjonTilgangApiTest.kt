@@ -10,7 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestApplicationExtension::class)
 internal class OperasjonTilgangApiTest(
-    private val testApplicationEngine: TestApplicationEngine) {
+    private val testApplicationEngine: TestApplicationEngine
+) {
 
     @Test
     fun `Beslutter forsøker å gjøre unntakshåndtering`() {
@@ -49,7 +50,8 @@ internal class OperasjonTilgangApiTest(
             grupper: Set<String>,
             operasjon: Operasjon,
             forventetStatusCode: HttpStatusCode,
-            jsonBody: String = """{"operasjon": "$operasjon","beskrivelse": "noe spennende"}""") {
+            jsonBody: String = """{"operasjon": "$operasjon","beskrivelse": "noe spennende"}"""
+        ) {
             handleRequest(HttpMethod.Post, "/api/tilgang") {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader(HttpHeaders.XCorrelationId, "id")

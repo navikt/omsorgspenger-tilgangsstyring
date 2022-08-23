@@ -1,6 +1,7 @@
 package no.nav.omsorgspenger.api
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import no.nav.helse.dusseldorf.testsupport.jws.NaisSts
@@ -15,7 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(TestApplicationExtension::class)
 internal class OpenAmTokenTest(
     private val testApplicationEngine: TestApplicationEngine,
-    private val wireMockServer: WireMockServer) {
+    private val wireMockServer: WireMockServer
+) {
 
     @Test
     fun `Gir 204 ved når man har rett gruppe`() {
@@ -75,7 +77,7 @@ internal class OpenAmTokenTest(
         }
     }
 
-    private fun gyldigToken(navIdent:String) = NaisSts.generateJwt(
+    private fun gyldigToken(navIdent: String) = NaisSts.generateJwt(
         application = "myApplication",
         overridingClaims = mapOf(
             "tokenName" to "id_token",

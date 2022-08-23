@@ -15,18 +15,20 @@ import java.net.URI
 import java.time.Duration
 
 internal class ActiveDirectoryService(
-    private val activeDirectoryGateway: ActiveDirectoryGateway) {
+    private val activeDirectoryGateway: ActiveDirectoryGateway
+) {
 
     private val cache: Cache<String, Set<Gruppe>> = Caffeine.newBuilder()
         .expireAfterWrite(Duration.ofMinutes(15))
         .maximumSize(100)
         .build()
 
-    internal suspend fun memberOf(token: OpenAmToken, correlationId: String) : Set<Gruppe> {
+    internal suspend fun memberOf(token: OpenAmToken, correlationId: String): Set<Gruppe> {
         require(token.erPersonToken) { "Kan kun gjøres med person token." }
         return cache.getIfPresent(token.username) ?: activeDirectoryGateway.memberOf(
             token = token,
-            correlationId = correlationId)
+            correlationId = correlationId
+        )
             .mapNotNull { adGruppe -> activeDirectoryGruppeMapping[adGruppe.uppercase()] }
             .toSet()
             .also { cache.put(token.username, it) }
@@ -41,19 +43,20 @@ internal class ActiveDirectoryService(
             "0000-GA-k9-overstyrer" to Gruppe.Overstyrer,
             "0000-GA-k9-drift" to Gruppe.Drift
         )
-        .mapKeys { it.key.uppercase() }
-        .also { require(it.values.containsAll(Gruppe.values().toList())) }
+            .mapKeys { it.key.uppercase() }
+            .also { require(it.values.containsAll(Gruppe.values().toList())) }
     }
 }
 
 internal class ActiveDirectoryGateway(
     private val memberOfUrl: URI,
     accessTokenClient: AccessTokenClient,
-    private val scopes: Set<String>) {
+    private val scopes: Set<String>
+) {
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
-    internal suspend fun memberOf(token: OpenAmToken, correlationId: String) : Set<String> {
+    internal suspend fun memberOf(token: OpenAmToken, correlationId: String): Set<String> {
         val authorizationHeader = cachedAccessTokenClient.getAccessToken(scopes).asAuthoriationHeader()
         val (statusCode, response) = memberOfUrl.toString().httpGet {
             it.header(HttpHeaders.Authorization, authorizationHeader)
@@ -63,10 +66,12 @@ internal class ActiveDirectoryGateway(
         require(statusCode == HttpStatusCode.OK) {
             "Mottok StatusCode $statusCode ved henting av grupper."
         }
-        return JSONObject(response).let { json -> when (json.has("value")) {
-            true -> json.getJSONArray("value")
-            false -> JSONArray()
-        }}.map { it as JSONObject }.map { it.getString("displayName") }.toSet()
+        return JSONObject(response).let { json ->
+            when (json.has("value")) {
+                true -> json.getJSONArray("value")
+                false -> JSONArray()
+            }
+        }.map { it as JSONObject }.map { it.getString("displayName") }.toSet()
     }
 
     internal companion object {
