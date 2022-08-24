@@ -1,36 +1,46 @@
 package no.nav.omsorgspenger.pdl
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.nimbusds.jwt.SignedJWT
-import io.ktor.client.HttpClient
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpGet
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpOptions
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpPost
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.jsonBody
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.readTextOrThrow
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.Result
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
-import no.nav.omsorgspenger.gruppe.ActiveDirectoryGateway.Companion.OpenAmTokenHeader
 import no.nav.omsorgspenger.auth.OpenAmToken
 import no.nav.omsorgspenger.auth.Token
+import no.nav.omsorgspenger.gruppe.ActiveDirectoryGateway.Companion.OpenAmTokenHeader
 import java.net.URI
 
 internal class PdlClient(
     private val pdlDirect: Pair<URI, Set<String>>,
     private val pdlProxy: Pair<URI, Set<String>>,
     private val accessTokenClient: AccessTokenClient,
-    private val httpClient: HttpClient
 ) : HealthCheck {
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .registerModule(JavaTimeModule())
 
     internal suspend fun hentInfoOmPersoner(
         identitetsnummer: Set<String>,
         correlationId: String,
-        token: Token): List<HentPersonResponse> {
+        token: Token
+    ): List<HentPersonResponse> {
         return identitetsnummer.map {
             hentInfoOmPerson(it, correlationId, token)
         }
@@ -40,14 +50,21 @@ internal class PdlClient(
         identitetsnummer: String,
         correlationId: String,
         token: Token) : HentPersonResponse {
-        return httpClient.post<HttpStatement>(token.graphqlUrl()) {
-            header("Nav-Call-Id", correlationId)
-            header("TEMA", "OMS")
-            accept(ContentType.Application.Json)
-            contentType(ContentType.Application.Json)
-            token.headers().forEach { (key, value) -> header(key, value) }
-            body = hentPersonInfoQuery(identitetsnummer)
-        }.receive()
+        val jsonBody = objectMapper.writeValueAsString(hentPersonInfoQuery(identitetsnummer))
+        val (httpStatusCode, response) = token.graphqlUrl().httpPost {builder ->
+            builder.header("Nav-Call-Id", correlationId)
+            builder.header("TEMA", "OMS")
+            builder.accept(ContentType.Application.Json)
+            builder.contentType(ContentType.Application.Json)
+            token.headers().forEach { (key, value) -> builder.header(key, value) }
+            builder.jsonBody(jsonBody)
+        }.readTextOrThrow()
+
+        require(httpStatusCode.isSuccess()) {
+            "HTTP ${httpStatusCode.value} fra ${token.graphqlUrl()}"
+        }
+
+        return objectMapper.readValue(response, HentPersonResponse::class.java)
     }
 
     private fun Token.graphqlUrl() = when (this) {
@@ -64,6 +81,7 @@ internal class PdlClient(
                 scopes = pdlProxy.second
             ).asAuthoriationHeader()
         )
+
         else -> mapOf(
             HttpHeaders.Authorization to cachedAccessTokenClient.getAccessToken(
                 scopes = pdlDirect.second,
@@ -82,24 +100,31 @@ internal class PdlClient(
 
     private fun accessTokenCheck(navn: String, scopes: Set<String>) = kotlin.runCatching {
         val accessTokenResponse = accessTokenClient.getAccessToken(scopes)
-        (SignedJWT.parse(accessTokenResponse.accessToken).jwtClaimsSet.getStringArrayClaim("roles")?.toList() ?: emptyList()).contains("access_as_application")
+        (SignedJWT.parse(accessTokenResponse.accessToken).jwtClaimsSet.getStringArrayClaim("roles")?.toList()
+            ?: emptyList()).contains("access_as_application")
     }.fold(
-        onSuccess = { when (it) {
-            true -> Healthy("${navn}AccessTokenCheck", "OK")
-            false -> UnHealthy("${navn}AccessTokenCheck", "Feil: Mangler rettigheter")
-        }},
+        onSuccess = {
+            when (it) {
+                true -> Healthy("${navn}AccessTokenCheck", "OK")
+                false -> UnHealthy("${navn}AccessTokenCheck", "Feil: Mangler rettigheter")
+            }
+        },
         onFailure = { UnHealthy("${navn}AccessTokenCheck", "Feil: ${it.message}") }
     )
 
-    private suspend fun pingCheck(navn: String, pdl: Pair<URI, Set<String>>) : Result = pdl.first.graphQl().httpOptions {
-        it.header(HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(
-            scopes = pdl.second
-        ).asAuthoriationHeader())
+    private suspend fun pingCheck(navn: String, pdl: Pair<URI, Set<String>>): Result = pdl.first.graphQl().httpOptions {
+        it.header(
+            HttpHeaders.Authorization, cachedAccessTokenClient.getAccessToken(
+                scopes = pdl.second
+            ).asAuthoriationHeader()
+        )
     }.second.fold(
-        onSuccess = { when (it.status.isSuccess()) {
-            true -> Healthy("${navn}PingCheck", "OK: ${it.readText()}")
-            false -> UnHealthy("${navn}PingCheck", "Feil: ${it.status}")
-        }},
-        onFailure = { UnHealthy("${navn}PingCheck", "Feil: ${it.message}")}
+        onSuccess = {
+            when (it.status.isSuccess()) {
+                true -> Healthy("${navn}PingCheck", "OK: ${it.bodyAsText()}")
+                false -> UnHealthy("${navn}PingCheck", "Feil: ${it.status}")
+            }
+        },
+        onFailure = { UnHealthy("${navn}PingCheck", "Feil: ${it.message}") }
     )
 }

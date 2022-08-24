@@ -17,17 +17,19 @@ import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.*
 
 @ExtendWith(TestApplicationExtension::class)
 internal class PersonTilgangApiTest(
-    private val testApplicationEngine: TestApplicationEngine) {
+    private val testApplicationEngine: TestApplicationEngine
+) {
 
     @Test
     fun `Gir 204 ved oppgitt identitetsnummer og operasjon`() {
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader(HttpHeaders.XCorrelationId, UUID.randomUUID().toString())
                 addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Beslutter"))}")
                 @Language("JSON")
                 val jsonBody = """
@@ -49,7 +51,7 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader(HttpHeaders.XCorrelationId, UUID.randomUUID().toString())
                 addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Overstyrer", "UkjentGruppe"))}")
                 @Language("JSON")
                 val jsonBody = """
@@ -71,7 +73,7 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader(HttpHeaders.XCorrelationId, UUID.randomUUID().toString())
                 addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Overstyrer", "UkjentGruppe"))}")
                 @Language("JSON")
                 val jsonBody = """
@@ -93,7 +95,7 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader(HttpHeaders.XCorrelationId, UUID.randomUUID().toString())
                 addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("UkjentGruppe"))}")
                 @Language("JSON")
                 val jsonBody = """
@@ -115,7 +117,7 @@ internal class PersonTilgangApiTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Post, "/api/tilgang/personer") {
                 addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader(HttpHeaders.XCorrelationId, "id")
+                addHeader(HttpHeaders.XCorrelationId, UUID.randomUUID().toString())
                 addHeader("Authorization", "Bearer ${gyldigToken(grupper = setOf("Veileder", "Saksbehandler"))}")
                 @Language("JSON")
                 val jsonBody = """
@@ -258,7 +260,7 @@ internal class PersonTilgangApiTest(
 
 internal fun gyldigToken(
     grupper: Set<String>,
-    audience : String = "omsorgspenger-tilgangsstyring"
+    audience: String = "omsorgspenger-tilgangsstyring"
 ) = Azure.V2_0.generateJwt(
     clientId = "any",
     clientAuthenticationMode = Azure.ClientAuthenticationMode.CLIENT_SECRET,

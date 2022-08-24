@@ -4,16 +4,16 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.application.*
-import io.ktor.auth.Authentication
-import io.ktor.auth.authenticate
-import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.config.*
-import io.ktor.features.*
-import io.ktor.jackson.jackson
-import io.ktor.routing.Routing
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.serialization.jackson.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.config.*
+import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.routing.*
 import no.nav.helse.dusseldorf.ktor.auth.AuthStatusPages
 import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.issuers
@@ -26,11 +26,11 @@ import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.omsorgspenger.api.TilgangApi
+import no.nav.omsorgspenger.auth.TokenResolver
 import no.nav.omsorgspenger.gruppe.ActiveDirectoryGateway
 import no.nav.omsorgspenger.gruppe.ActiveDirectoryService
 import no.nav.omsorgspenger.gruppe.GruppeResolver
 import no.nav.omsorgspenger.gruppe.GruppetilgangService
-import no.nav.omsorgspenger.auth.TokenResolver
 import no.nav.omsorgspenger.pdl.PdlClient
 import no.nav.omsorgspenger.person.PersonTilgangService
 import java.net.URI
@@ -39,10 +39,11 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 private fun ApplicationConfigValue.scopes() = getString().replace(" ", "").split(",").toSet()
 
 fun Application.app() {
-    install(ContentNegotiation) {
+    val issuers = environment.config.issuers().withoutAdditionalClaimRules()
+
+    install(io.ktor.server.plugins.contentnegotiation.ContentNegotiation) {
         jackson()
     }
-    val issuers = environment.config.issuers().withoutAdditionalClaimRules()
 
     install(Authentication) {
         multipleJwtIssuers(issuers)
@@ -65,20 +66,11 @@ fun Application.app() {
         callIdMdc("callId")
     }
 
-    val objectMapper: ObjectMapper = jacksonObjectMapper()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-
     val pdlConfig = environment.config.config("nav.pdl")
     val azureConfig = environment.config.config("nav.auth.azure")
     val omsorgspengerProxyConfig = environment.config.config("nav.omsorgspenger_proxy")
     val omsorgspengerProxyScopes = omsorgspengerProxyConfig.property("scopes").scopes()
 
-    val httpClient = HttpClient {
-        install(JsonFeature) {
-            serializer = JacksonSerializer(objectMapper)
-        }
-    }
     val accessTokenClient = ClientSecretAccessTokenClient(
         clientId = azureConfig.property("client_id").getString(),
         clientSecret = azureConfig.property("client_secret").getString(),
@@ -89,8 +81,7 @@ fun Application.app() {
     val pdlClient = PdlClient(
         pdlDirect = URI(pdlConfig.property("base_url").getString()) to pdlConfig.property("scopes").scopes(),
         pdlProxy = URI(omsorgspengerProxyConfig.property("pdl_base_url").getString()) to omsorgspengerProxyScopes,
-        accessTokenClient = accessTokenClient,
-        httpClient = httpClient
+        accessTokenClient = accessTokenClient
     )
 
     val healthService = HealthService(setOf(pdlClient))
@@ -119,7 +110,10 @@ fun Application.app() {
                 ),
                 gruppetilgangService = GruppetilgangService(
                     gruppeResolver = GruppeResolver(
-                        azureGroupMappingPath = environment.config.getRequiredString("nav.azure_gruppemapping_resource_path", secret = false),
+                        azureGroupMappingPath = environment!!.config.getRequiredString(
+                            "nav.azure_gruppemapping_resource_path",
+                            secret = false
+                        ),
                         activeDirectoryService = ActiveDirectoryService(
                             activeDirectoryGateway = ActiveDirectoryGateway(
                                 memberOfUrl = URI(omsorgspengerProxyConfig.property("member_of_uri").getString()),

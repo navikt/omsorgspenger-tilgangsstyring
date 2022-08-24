@@ -1,15 +1,15 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "3.1.6.8-1a4651d"
-val ktorVersion = "1.6.8"
-val junitJupiterVersion = "5.8.2"
-val assertJVersion = "3.22.0"
-val mockkVersion = "1.12.3"
+val dusseldorfVersion = "3.2.0.3-d4fdef9"
+val ktorVersion = "2.0.3"
+val junitJupiterVersion = "5.9.0"
+val assertJVersion = "3.23.1"
+val mockkVersion = "1.12.5"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -19,25 +19,23 @@ java {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-jackson:$ktorVersion")
-    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("no.nav.helse:dusseldorf-ktor-auth:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-core:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfVersion")
+    implementation("no.nav.helse:dusseldorf-ktor-jackson:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-metrics:$dusseldorfVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
     // Test
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
+    testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-    testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion") {
-        exclude(group = "com.github.jknack")
-    }
+    testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
@@ -48,7 +46,7 @@ repositories {
         name = "GitHubPackages"
         url = uri("https://maven.pkg.github.com/navikt/k9-rapid")
         credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+            username = project.findProperty("gpr.user") as String? ?: "x-access-token"
             password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
         }
     }

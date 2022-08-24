@@ -16,10 +16,12 @@ internal fun WireMockServer.stubMemberOf(correlationId: String): WireMockServer 
             .withHeader("X-Open-AM", WireMock.containing("Bearer "))
             .willReturn(
                 WireMock.aResponse()
-                    .withStatus(when (body) {
-                        null -> 404
-                        else -> 200
-                    })
+                    .withStatus(
+                        when (body) {
+                            null -> 404
+                            else -> 200
+                        }
+                    )
                     .withHeader("Content-Type", "application/json")
                     .withBody(body)
             )
