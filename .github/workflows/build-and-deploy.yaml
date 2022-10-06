@@ -11,11 +11,8 @@ on:
       - 'CODEOWNERS'
   workflow_dispatch:
 
-env:
-  BASE_IMAGE: ghcr.io/${{ github.repository }}
-
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,12 +20,16 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: temurin
+          distribution: corretto
           cache: gradle
+
       - name: Kjør tester & bygg JAR
         run: ./gradlew test shadowjar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sett image for docker & deploy
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY}:$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - uses: docker/login-action@v2
         with:
@@ -36,16 +37,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sett tag for docker
-        run: echo "TAG=$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
-      - name: Bygg & last opp Docker image
-        run: |
-          docker build --pull --tag ${BASE_IMAGE}:${TAG} --tag ${BASE_IMAGE}:latest .
-          docker push ${BASE_IMAGE} --all-tags
-
-      - name: Sett image for nais deploy
-        run: echo "IMAGE=${BASE_IMAGE}:${TAG}" >> $GITHUB_ENV
+      - uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          pull: true
+          tags: ${{ env.IMAGE }}
 
       - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v1
@@ -56,7 +53,7 @@ jobs:
           VARS: nais/dev-gcp.json
 
       - name: Deploy til prod-gcp
-        if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'ci skip')
+        if: github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'ci skip')
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
