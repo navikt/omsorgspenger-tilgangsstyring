@@ -1,17 +1,12 @@
 package no.nav.omsorgspenger
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.config.*
 import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.routing.*
 import no.nav.helse.dusseldorf.ktor.auth.AuthStatusPages
@@ -19,7 +14,12 @@ import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.issuers
 import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.auth.withoutAdditionalClaimRules
-import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
+import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
+import no.nav.helse.dusseldorf.ktor.core.correlationIdAndRequestIdInMdc
+import no.nav.helse.dusseldorf.ktor.core.fromXCorrelationIdHeader
+import no.nav.helse.dusseldorf.ktor.core.getRequiredString
+import no.nav.helse.dusseldorf.ktor.core.logRequests
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
@@ -41,8 +41,9 @@ private fun ApplicationConfigValue.scopes() = getString().replace(" ", "").split
 fun Application.app() {
     val issuers = environment.config.issuers().withoutAdditionalClaimRules()
 
-    install(io.ktor.server.plugins.contentnegotiation.ContentNegotiation) {
+    install(ContentNegotiation) {
         jackson()
+
     }
 
     install(Authentication) {
