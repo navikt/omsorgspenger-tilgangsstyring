@@ -1,15 +1,15 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "3.2.0.3-d4fdef9"
-val ktorVersion = "2.0.3"
-val junitJupiterVersion = "5.9.0"
+val dusseldorfVersion = "3.2.1.2-ce40a5b"
+val ktorVersion = "2.1.2"
+val junitJupiterVersion = "5.9.1"
 val assertJVersion = "3.23.1"
-val mockkVersion = "1.12.5"
+val mockkVersion = "1.13.2"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.7.20"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -27,7 +27,7 @@ dependencies {
     implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-metrics:$dusseldorfVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
 
     // Test
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
@@ -83,6 +83,6 @@ tasks {
 
 
     withType<Wrapper> {
-        gradleVersion = "7.4.2"
+        gradleVersion = "7.5.1"
     }
 }
