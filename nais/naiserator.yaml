@@ -26,7 +26,7 @@ spec:
         - application: omsorgspenger-rammemeldinger
         - application: omsorgsdager
         - application: k9-aarskvantum
-          namespace: default
+          namespace: k9saksbehandling
           cluster: {{clusterFss}}
     outbound:
       external:
