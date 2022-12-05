@@ -27,8 +27,6 @@ import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.omsorgspenger.api.TilgangApi
 import no.nav.omsorgspenger.auth.TokenResolver
-import no.nav.omsorgspenger.gruppe.ActiveDirectoryGateway
-import no.nav.omsorgspenger.gruppe.ActiveDirectoryService
 import no.nav.omsorgspenger.gruppe.GruppeResolver
 import no.nav.omsorgspenger.gruppe.GruppetilgangService
 import no.nav.omsorgspenger.pdl.PdlClient
@@ -43,7 +41,6 @@ fun Application.app() {
 
     install(ContentNegotiation) {
         jackson()
-
     }
 
     install(Authentication) {
@@ -69,8 +66,6 @@ fun Application.app() {
 
     val pdlConfig = environment.config.config("nav.pdl")
     val azureConfig = environment.config.config("nav.auth.azure")
-    val omsorgspengerProxyConfig = environment.config.config("nav.omsorgspenger_proxy")
-    val omsorgspengerProxyScopes = omsorgspengerProxyConfig.property("scopes").scopes()
 
     val accessTokenClient = ClientSecretAccessTokenClient(
         clientId = azureConfig.property("client_id").getString(),
@@ -81,7 +76,6 @@ fun Application.app() {
 
     val pdlClient = PdlClient(
         pdlDirect = URI(pdlConfig.property("base_url").getString()) to pdlConfig.property("scopes").scopes(),
-        pdlProxy = URI(omsorgspengerProxyConfig.property("pdl_base_url").getString()) to omsorgspengerProxyScopes,
         accessTokenClient = accessTokenClient
     )
 
@@ -104,9 +98,6 @@ fun Application.app() {
                 tokenResolver = TokenResolver(
                     azureIssuers = setOf(
                         issuers.filterKeys { it.alias() == "azure-v2" }.keys.first().issuer()
-                    ),
-                    openAmIssuers = setOf(
-                        issuers.filterKeys { it.alias() == "open-am" }.keys.first().issuer()
                     )
                 ),
                 gruppetilgangService = GruppetilgangService(
@@ -114,13 +105,6 @@ fun Application.app() {
                         azureGroupMappingPath = environment!!.config.getRequiredString(
                             "nav.azure_gruppemapping_resource_path",
                             secret = false
-                        ),
-                        activeDirectoryService = ActiveDirectoryService(
-                            activeDirectoryGateway = ActiveDirectoryGateway(
-                                memberOfUrl = URI(omsorgspengerProxyConfig.property("member_of_uri").getString()),
-                                accessTokenClient = accessTokenClient,
-                                scopes = omsorgspengerProxyScopes
-                            )
                         )
                     )
                 )

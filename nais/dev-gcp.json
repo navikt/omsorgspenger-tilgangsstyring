@@ -21,8 +21,6 @@
     "OMSORGSPENGER_PROXY_SCOPES": "824525c6-74df-47fc-8892-444e5f8506de/.default",
     "OMSORGSPENGER_PROXY_PDL_BASE_URL": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/pdl",
     "OMSORGSPENGER_PROXY_MEMBER_OF_URI": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/active-directory/me/memberOf",
-    "OPEN_AM_JWKS_URI": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/open-am/keys",
-    "OPEN_AM_ISSUER": "https://isso-q.adeo.no:443/isso/oauth2",
     "AZURE_GRUPPEMAPPING_RESOURCE_PATH": "azureGruppeMapping/preprod.json",
     "PDL_BASE_URL": "https://pdl-api.dev-fss-pub.nais.io",
     "PDL_SCOPES": "api://dev-fss.pdl.pdl-api/.default"

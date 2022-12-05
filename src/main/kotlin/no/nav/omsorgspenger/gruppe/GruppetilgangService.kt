@@ -7,7 +7,7 @@ import no.nav.omsorgspenger.secureLog
 internal class GruppetilgangService(
     private val gruppeResolver: GruppeResolver) {
 
-    internal suspend fun kanGjøreOperasjon(
+    internal fun kanGjøreOperasjon(
         operasjon: Operasjon,
         token: Token,
         correlationId: String) : Boolean {

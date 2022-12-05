@@ -19,14 +19,11 @@ import no.nav.helse.dusseldorf.ktor.health.Result
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
-import no.nav.omsorgspenger.auth.OpenAmToken
 import no.nav.omsorgspenger.auth.Token
-import no.nav.omsorgspenger.gruppe.ActiveDirectoryGateway.Companion.OpenAmTokenHeader
 import java.net.URI
 
 internal class PdlClient(
     private val pdlDirect: Pair<URI, Set<String>>,
-    private val pdlProxy: Pair<URI, Set<String>>,
     private val accessTokenClient: AccessTokenClient,
 ) : HealthCheck {
 
@@ -51,7 +48,7 @@ internal class PdlClient(
         correlationId: String,
         token: Token) : HentPersonResponse {
         val jsonBody = objectMapper.writeValueAsString(hentPersonInfoQuery(identitetsnummer))
-        val (httpStatusCode, response) = token.graphqlUrl().httpPost {builder ->
+        val (httpStatusCode, response) = pdlDirect.first.graphQl().httpPost {builder ->
             builder.header("Nav-Call-Id", correlationId)
             builder.header("TEMA", "OMS")
             builder.accept(ContentType.Application.Json)
@@ -61,41 +58,25 @@ internal class PdlClient(
         }.readTextOrThrow()
 
         require(httpStatusCode.isSuccess()) {
-            "HTTP ${httpStatusCode.value} fra ${token.graphqlUrl()}"
+            "HTTP ${httpStatusCode.value} fra ${pdlDirect.first.graphQl()}"
         }
 
         return objectMapper.readValue(response, HentPersonResponse::class.java)
     }
 
-    private fun Token.graphqlUrl() = when (this) {
-        is OpenAmToken -> pdlProxy.first
-        else -> pdlDirect.first
-    }.graphQl()
-
     private fun URI.graphQl() = "$this/graphql"
 
-    private fun Token.headers() = when (this) {
-        is OpenAmToken -> mapOf(
-            OpenAmTokenHeader to this.authorizationHeader(),
-            HttpHeaders.Authorization to cachedAccessTokenClient.getAccessToken(
-                scopes = pdlProxy.second
-            ).asAuthoriationHeader()
-        )
-
-        else -> mapOf(
+    private fun Token.headers() = mapOf(
             HttpHeaders.Authorization to cachedAccessTokenClient.getAccessToken(
                 scopes = pdlDirect.second,
                 onBehalfOf = this.jwt.token
             ).asAuthoriationHeader()
         )
-    }
 
     override suspend fun check() = Result.merge(
         name = "PdlClient",
         accessTokenCheck("PdlDirect", pdlDirect.second),
-        accessTokenCheck("PdlProxy", pdlProxy.second),
         pingCheck("PdlDirect", pdlDirect),
-        pingCheck("PdlProxy", pdlProxy)
     )
 
     private fun accessTokenCheck(navn: String, scopes: Set<String>) = kotlin.runCatching {

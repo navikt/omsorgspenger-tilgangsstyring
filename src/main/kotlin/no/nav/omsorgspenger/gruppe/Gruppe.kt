@@ -1,14 +1,12 @@
 package no.nav.omsorgspenger.gruppe
 
-import no.nav.omsorgspenger.auth.AzureToken
-import no.nav.omsorgspenger.auth.OpenAmToken
 import no.nav.omsorgspenger.auth.Token
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 
 internal class GruppeResolver(
-    azureGroupMappingPath: String,
-    private val activeDirectoryService: ActiveDirectoryService) {
+    azureGroupMappingPath: String
+) {
 
     private val azureGroupMapping = azureGroupMappingPath.groupMappingFromResources()
 
@@ -17,19 +15,9 @@ internal class GruppeResolver(
         azureGroupMapping.forEach { (gruppe, id) -> logger.info("Gruppe[$gruppe]=$id") }
     }
 
-    internal suspend fun resolve(token: Token, correlationId: String) = when (token) {
-        is AzureToken -> token.resolve()
-        else -> (token as OpenAmToken).resolve(correlationId)
-    }
-
-    private fun AzureToken.resolve() = azureGroupMapping.filterValues {
-        it in jwt.claims.getValue("groups").asArray(String::class.java)
+    internal fun resolve(token: Token, correlationId: String) = azureGroupMapping.filterValues {
+        it in token.jwt.claims.getValue("groups").asArray(String::class.java)
     }.keys
-
-    private suspend fun OpenAmToken.resolve(correlationId: String) = activeDirectoryService.memberOf(
-        token = this,
-        correlationId = correlationId
-    )
 
     private companion object {
         private val logger = LoggerFactory.getLogger(GruppeResolver::class.java)
