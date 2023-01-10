@@ -75,7 +75,8 @@ fun Application.app() {
     )
 
     val pdlClient = PdlClient(
-        pdlDirect = URI(pdlConfig.property("base_url").getString()) to pdlConfig.property("scopes").scopes(),
+        pdlUrl = URI(pdlConfig.property("base_url").getString()),
+        pdlScopes = pdlConfig.property("scopes").scopes(),
         accessTokenClient = accessTokenClient
     )
 

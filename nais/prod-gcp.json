@@ -11,16 +11,12 @@
     "1509dc91-a955-4e72-b64c-2f049e37c0c6"
   ],
   "externalHosts": [
-    "omsorgspenger-proxy.prod-fss-pub.nais.io",
     "pdl-api.prod-fss-pub.nais.io"
   ],
   "ingresses": [
     "https://omsorgspenger-tilgangsstyring.intern.nav.no"
   ],
   "env": {
-    "OMSORGSPENGER_PROXY_SCOPES": "e816bb42-bf62-4be9-a1cc-a9be70fe4403/.default",
-    "OMSORGSPENGER_PROXY_PDL_BASE_URL": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/pdl",
-    "OMSORGSPENGER_PROXY_MEMBER_OF_URI": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/active-directory/me/memberOf",
     "AZURE_GRUPPEMAPPING_RESOURCE_PATH": "azureGruppeMapping/prod.json",
     "PDL_BASE_URL": "https://pdl-api.prod-fss-pub.nais.io",
     "PDL_SCOPES": "api://prod-fss.pdl.pdl-api/.default"
