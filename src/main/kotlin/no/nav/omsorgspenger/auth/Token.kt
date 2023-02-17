@@ -7,8 +7,7 @@ import io.ktor.http.*
 import org.slf4j.LoggerFactory
 
 internal class TokenResolver(
-    private val azureIssuers: Set<String>,
-    private val openAmIssuers: Set<String>
+    private val azureIssuers: Set<String>
 ) {
     internal fun resolve(call: ApplicationCall): Pair<String, Token>? {
         val header = call.request.headers[HttpHeaders.Authorization] ?: return logger.warn("Ingen Authorization header")
@@ -16,7 +15,6 @@ internal class TokenResolver(
         val decodedJwt = JWT.decode(header.removePrefix("Bearer "))
         return when (decodedJwt.issuer) {
             in azureIssuers -> header to AzureToken.parse(decodedJwt)
-            in openAmIssuers -> header to OpenAmToken.parse(decodedJwt)
             else -> logger.warn("Støtter ikke issuer ${decodedJwt.issuer}").let { null }
         }
     }
@@ -53,21 +51,4 @@ internal class AzureToken private constructor(
 
     override val erPersonToken = oid != null && preferredUsername != null
     override val username = navIdent ?: preferredUsername ?: "n/a"
-}
-
-internal class OpenAmToken private constructor(
-    override val jwt: DecodedJWT,
-    override val clientId: String,
-    private val sub: String
-) : Token {
-    internal companion object {
-        internal fun parse(jwt: DecodedJWT) = OpenAmToken(
-            jwt = jwt,
-            clientId = jwt.claims.getValue("azp").asString(),
-            sub = jwt.subject
-        )
-    }
-
-    override val erPersonToken = jwt.claims["tokenName"]?.asString() == "id_token"
-    override val username = sub
 }

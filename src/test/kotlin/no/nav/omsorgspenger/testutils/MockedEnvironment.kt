@@ -29,17 +29,11 @@ internal class MockedEnvironment(
         appConfig["nav.auth.issuers.0.audience"] = "omsorgspenger-tilgangsstyring"
         appConfig["nav.auth.issuers.0.jwks_uri"] = wireMockServer.getAzureV2JwksUrl()
         appConfig["nav.auth.issuers.0.issuer"] = Azure.V2_0.getIssuer()
-        appConfig["nav.auth.issuers.1.alias"] = "open-am"
-        appConfig["nav.auth.issuers.1.jwks_uri"] = wireMockServer.getNaisStsJwksUrl()
-        appConfig["nav.auth.issuers.1.issuer"] = NaisSts.getIssuer()
         appConfig["nav.auth.azure.client_id"] = "omsorgspenger-tilgangsstyring"
         appConfig["nav.auth.azure.client_secret"] = "anything"
         appConfig["nav.auth.azure.token_endpoint"] = wireMockServer.getAzureV2TokenUrl()
         appConfig["nav.pdl.base_url"] = wireMockServer.pdlApiBaseUrl()
         appConfig["nav.pdl.scopes"] = "pdl/.default"
-        appConfig["nav.omsorgspenger_proxy.scopes"] = "omsorgspenger-proxy/.default"
-        appConfig["nav.omsorgspenger_proxy.member_of_uri"] = wireMockServer.memberOfUri()
-        appConfig["nav.omsorgspenger_proxy.pdl_base_url"] = wireMockServer.pdlApiBaseUrl()
         appConfig["nav.azure_gruppemapping_resource_path"] = "azureGruppeMapping/test.json"
     }
 
