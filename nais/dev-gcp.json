@@ -14,7 +14,7 @@
     "pdl-api.dev-fss-pub.nais.io"
   ],
   "ingresses": [
-    "https://omsorgspenger-tilgangsstyring.dev.intern.nav.no"
+    "https://omsorgspenger-tilgangsstyring.intern.dev.nav.no"
   ],
   "env": {
     "AZURE_GRUPPEMAPPING_RESOURCE_PATH": "azureGruppeMapping/preprod.json",
