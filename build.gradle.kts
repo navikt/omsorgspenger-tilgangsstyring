@@ -1,10 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "3.2.2.4-98ccf55"
-val ktorVersion = "2.2.4"
-val junitJupiterVersion = "5.9.2"
+val dusseldorfVersion = "3.2.3.0-7a92774"
+val ktorVersion = "2.3.0"
+val junitJupiterVersion = "5.9.3"
 val assertJVersion = "3.24.2"
-val mockkVersion = "1.13.4"
+val mockkVersion = "1.13.5"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
@@ -85,7 +85,7 @@ tasks {
 
 
     withType<Wrapper> {
-        gradleVersion = "8.0.2"
+        gradleVersion = "8.1.1"
     }
 }
 
