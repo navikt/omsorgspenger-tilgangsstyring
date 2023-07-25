@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - master
+      - main
     paths-ignore:
       - '**.md'
       - '**.MD'
@@ -32,7 +32,7 @@ jobs:
     with:
       readertoken: false
       package-command: './gradlew clean build -x test'
-      branch: master
+      branch: main
 
   test:
     uses: navikt/sif-gha-workflows/.github/workflows/gradle-test.yml@main
