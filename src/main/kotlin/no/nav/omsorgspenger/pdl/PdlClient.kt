@@ -28,8 +28,11 @@ internal class PdlClient(
     private val accessTokenClient: AccessTokenClient
 ) : HealthCheck {
 
-    // https://behandlingskatalog.intern.nav.no/process/purpose/PLEIE_OMSORGS_OG_OPPLAERINGSPENGER/4a1c9324-9c5e-4ddb-ac7f-c55d1dcd9736
+    private companion object {
+        // https://behandlingskatalog.intern.nav.no/process/purpose/PLEIE_OMSORGS_OG_OPPLAERINGSPENGER/4a1c9324-9c5e-4ddb-ac7f-c55d1dcd9736
     const val OMSORGSPENGER_RAMMEMELDING = "B142"
+    }
+    
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
