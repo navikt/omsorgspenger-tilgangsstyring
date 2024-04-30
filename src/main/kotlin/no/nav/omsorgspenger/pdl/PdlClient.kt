@@ -28,6 +28,8 @@ internal class PdlClient(
     private val accessTokenClient: AccessTokenClient
 ) : HealthCheck {
 
+    // https://behandlingskatalog.intern.nav.no/process/purpose/PLEIE_OMSORGS_OG_OPPLAERINGSPENGER/4a1c9324-9c5e-4ddb-ac7f-c55d1dcd9736
+    const val OMSORGSPENGER_RAMMEMELDING = "B142"
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -52,6 +54,7 @@ internal class PdlClient(
         val (httpStatusCode, response) = pdlUrl.graphQl().httpPost { builder ->
             builder.header("Nav-Call-Id", correlationId)
             builder.header("TEMA", "OMS")
+            builder.header("Behandlingsnummer", OMSORGSPENGER_RAMMEMELDING)
             builder.accept(ContentType.Application.Json)
             builder.contentType(ContentType.Application.Json)
             token.headers().forEach { (key, value) -> builder.header(key, value) }
