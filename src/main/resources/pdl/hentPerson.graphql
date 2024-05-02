@@ -1,7 +1,7 @@
 query($ident: ID!){
     hentPerson(ident: $ident) {
-        bostedsadresse {
-            coAdressenavn
+        folkeregisteridentifikator {
+            identifikasjonsnummer
         }
     }
 }

@@ -10,9 +10,9 @@ data class Data(
 )
 
 data class HentPerson(
-    val bostedsadresse: List<Bostedsadresse>
+    val folkeregisteridentifikator: List<Folkeregisteridentifikator>
 )
 
-data class Bostedsadresse(
-    val coAdressenavn: String?
+data class Folkeregisteridentifikator(
+    val identifikasjonsnummer: String
 )
