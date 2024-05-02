@@ -33,9 +33,9 @@ private fun WireMockServer.stubPdlApiHentPerson(identitetsnummer: String): WireM
                             {
                                 "data": {
                                     "hentPerson": {
-                                        "bostedsadresse": [
+                                        "folkeregisteridentifikator": [
                                             {
-                                                "coAdressenavn": "Test"
+                                                "identifikasjonsnummer": "$identitetsnummer"
                                             }
                                         ]
                                     }
