@@ -3,8 +3,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 val dusseldorfVersion = "5.0.3"
 val ktorVersion = "2.3.12"
 val junitJupiterVersion = "5.10.3"
-val assertJVersion = "3.26.0"
-val mockkVersion = "1.13.11"
+val assertJVersion = "3.26.3"
+val mockkVersion = "1.13.12"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
