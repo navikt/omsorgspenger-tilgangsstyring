@@ -1,10 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "5.0.14"
+val dusseldorfVersion = "5.0.16"
 val ktorVersion = "2.3.13"
-val junitJupiterVersion = "5.11.3"
-val assertJVersion = "3.26.3"
-val mockkVersion = "1.13.13"
+val junitJupiterVersion = "5.11.4"
+val assertJVersion = "3.27.2"
+val mockkVersion = "1.13.14"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
