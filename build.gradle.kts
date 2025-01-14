@@ -1,6 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "5.0.16"
+val dusseldorfVersion = "5.0.17"
 val ktorVersion = "2.3.13"
 val junitJupiterVersion = "5.11.4"
 val assertJVersion = "3.27.2"
