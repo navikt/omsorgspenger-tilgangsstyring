@@ -1,21 +1,26 @@
 package no.nav.omsorgspenger.api
 
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import no.nav.omsorgspenger.testutils.MockedEnvironment
 import no.nav.omsorgspenger.testutils.TestApplicationExtension
-
+import no.nav.omsorgspenger.testutils.getConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestApplicationExtension::class)
 internal class OperasjonTilgangApiTest(
-    private val testApplicationEngine: TestApplicationEngine
+    private val mockedEnvironment: MockedEnvironment
 ) {
 
     @Test
     fun `Beslutter forsøker å gjøre unntakshåndtering`() {
-        with(testApplicationEngine) {
+        testApplication {
+            environment {
+                config = getConfig(mockedEnvironment.appConfig)
+            }
             assertRequest(
                 grupper = setOf("Beslutter"),
                 operasjon = Operasjon.Unntakshåndtering,
@@ -27,7 +32,10 @@ internal class OperasjonTilgangApiTest(
     @Test
     fun `Driftsperson forsøker å gjøre unntakshåndtering`() {
         // identitetsnummer ikke satt i det hele tatt.
-        with(testApplicationEngine) {
+        testApplication {
+            environment {
+                config = getConfig(mockedEnvironment.appConfig)
+            }
             assertRequest(
                 grupper = setOf("Drift"),
                 operasjon = Operasjon.Unntakshåndtering,
@@ -35,7 +43,10 @@ internal class OperasjonTilgangApiTest(
             )
         }
         // identitetsnummer tom liste
-        with(testApplicationEngine) {
+        testApplication {
+            environment {
+                config = getConfig(mockedEnvironment.appConfig)
+            }
             assertRequest(
                 grupper = setOf("Drift"),
                 operasjon = Operasjon.Unntakshåndtering,
@@ -46,19 +57,20 @@ internal class OperasjonTilgangApiTest(
     }
 
     private companion object {
-        private fun TestApplicationEngine.assertRequest(
+        private suspend fun ApplicationTestBuilder.assertRequest(
             grupper: Set<String>,
             operasjon: Operasjon,
             forventetStatusCode: HttpStatusCode,
             jsonBody: String = """{"operasjon": "$operasjon","beskrivelse": "noe spennende"}"""
         ) {
-            handleRequest(HttpMethod.Post, "/api/tilgang") {
-                addHeader(HttpHeaders.ContentType, "application/json")
-                addHeader(HttpHeaders.XCorrelationId, "id")
-                addHeader("Authorization", "Bearer ${gyldigToken(grupper = grupper)}")
+
+            client.post("/api/tilgang") {
+                header(HttpHeaders.ContentType, "application/json")
+                header(HttpHeaders.XCorrelationId, "id")
+                header("Authorization", "Bearer ${gyldigToken(grupper = grupper)}")
                 setBody(jsonBody)
             }.apply {
-                assertThat(response.status()).isEqualTo(forventetStatusCode)
+                assertThat(status).isEqualTo(forventetStatusCode)
             }
         }
     }
