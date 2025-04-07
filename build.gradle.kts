@@ -3,6 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 val dusseldorfVersion = "6.1.2"
 val ktorVersion = "3.1.0"
 val junitJupiterVersion = "5.12.1"
+val junitPlatformVersion = "1.12.1"
 val assertJVersion = "3.27.3"
 val mockkVersion = "1.13.17"
 
@@ -37,6 +38,7 @@ dependencies {
         exclude(group = "org.eclipse.jetty")
     }
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testImplementation("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
