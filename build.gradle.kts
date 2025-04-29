@@ -5,7 +5,7 @@ val ktorVersion = "3.1.0"
 val junitJupiterVersion = "5.12.2"
 val junitPlatformVersion = "1.12.2"
 val assertJVersion = "3.27.3"
-val mockkVersion = "1.14.0"
+val mockkVersion = "1.14.2"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
