@@ -19,6 +19,10 @@ plugins {
 java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 dependencies {
@@ -58,14 +62,6 @@ repositories {
 }
 
 tasks {
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "21"
-    }
-
-    named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "21"
-    }
-
     withType<Test> {
         useJUnitPlatform()
         testLogging {
