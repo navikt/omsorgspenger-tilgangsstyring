@@ -2,9 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val dusseldorfVersion = "7.0.4"
 val ktorVersion = "3.2.3"
-val junitJupiterVersion = "5.13.4"
-val junitPlatformVersion = "1.13.4"
-val assertJVersion = "3.27.4"
+val junitVersion = "6.0.0"
+val assertJVersion = "3.27.6"
 val mockkVersion = "1.14.5"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
@@ -37,12 +36,12 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
 
     // Test
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-    testImplementation("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation("org.junit.platform:junit-platform-launcher:$junitVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
