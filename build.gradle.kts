@@ -4,7 +4,7 @@ val dusseldorfVersion = "7.0.4"
 val ktorVersion = "3.2.3"
 val junitVersion = "6.0.0"
 val assertJVersion = "3.27.6"
-val mockkVersion = "1.14.5"
+val mockkVersion = "1.14.6"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
