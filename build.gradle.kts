@@ -4,14 +4,14 @@ val dusseldorfVersion = "7.0.4"
 val ktorVersion = "3.2.3"
 val junitVersion = "6.0.0"
 val assertJVersion = "3.27.6"
-val mockkVersion = "1.14.5"
+val mockkVersion = "1.14.6"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "2.2.20"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.sonarqube") version "6.3.1.5724"
+    id("org.sonarqube") version "7.0.0.6105"
     jacoco
 }
 
