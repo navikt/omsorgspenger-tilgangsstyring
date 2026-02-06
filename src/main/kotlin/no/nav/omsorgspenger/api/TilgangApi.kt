@@ -1,8 +1,6 @@
 package no.nav.omsorgspenger.api
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
-import io.ktor.server.application.*
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.*
@@ -39,8 +37,7 @@ internal fun Route.TilgangApi(
             onSuccess = { requestBody -> requestBody },
             onFailure = { ex ->
                 when (ex) {
-                    is MismatchedInputException,
-                    is MissingKotlinParameterException -> {
+                    is MismatchedInputException -> {
                         logger.error("Mapping exception", ex)
                         return@post call.respond(HttpStatusCode.BadRequest, ex.localizedMessage)
                     }

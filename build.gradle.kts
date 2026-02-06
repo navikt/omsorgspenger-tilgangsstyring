@@ -1,26 +1,24 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfVersion = "7.0.4"
-val ktorVersion = "3.2.3"
+val dusseldorfVersion = "7.0.7"
+val ktorVersion = "3.4.0"
 val junitVersion = "6.0.2"
 val assertJVersion = "3.27.7"
 val mockkVersion = "1.14.9"
+val okhttpVersion = "5.3.2"
 
-val mainClass = "no.nav.omsorgspenger.AppKt"
+val appMainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.3.1"
     id("org.sonarqube") version "7.2.2.6593"
     jacoco
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
@@ -34,6 +32,8 @@ dependencies {
     implementation("no.nav.helse:dusseldorf-ktor-metrics:$dusseldorfVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:$okhttpVersion"))
+    implementation("com.squareup.okhttp3:okhttp-jvm")
 
     // Test
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
@@ -74,16 +74,12 @@ tasks {
         manifest {
             attributes(
                 mapOf(
-                    "Main-Class" to mainClass
+                    "Main-Class" to appMainClass
                 )
             )
         }
     }
 
-
-    withType<Wrapper> {
-        gradleVersion = "8.8"
-    }
 }
 
 tasks.jacocoTestReport {
