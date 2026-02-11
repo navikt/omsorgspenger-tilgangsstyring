@@ -41,7 +41,6 @@ updates:
           - "*"
     registries:
       - k9-rapid
-      - ghcr
 
   - package-ecosystem: docker
     directory: "/"
@@ -49,3 +48,5 @@ updates:
       interval: daily
     cooldown:
       default-days: 7
+    registries:
+      - ghcr
