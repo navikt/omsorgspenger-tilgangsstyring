@@ -10,7 +10,7 @@ val okhttpVersion = "5.3.2"
 val appMainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.3.10"
     id("com.gradleup.shadow") version "9.3.1"
     id("org.sonarqube") version "7.2.2.6593"
     jacoco
