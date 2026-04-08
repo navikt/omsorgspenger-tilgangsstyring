@@ -11,7 +11,7 @@ val appMainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "2.3.20"
-    id("com.gradleup.shadow") version "9.4.0"
+    id("com.gradleup.shadow") version "9.4.1"
     id("org.sonarqube") version "7.2.3.7755"
     jacoco
 }
