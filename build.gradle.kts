@@ -1,11 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val dusseldorfVersion = "7.0.8"
-val ktorVersion = "3.4.0"
+val ktorVersion = "3.4.2"
 val junitVersion = "6.0.3"
 val assertJVersion = "3.27.7"
 val mockkVersion = "1.14.9"
 val okhttpVersion = "5.3.2"
+val nettyVersion = "4.2.13.Final"
 
 val appMainClass = "no.nav.omsorgspenger.AppKt"
 
@@ -34,6 +35,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
     implementation(platform("com.squareup.okhttp3:okhttp-bom:$okhttpVersion"))
     implementation("com.squareup.okhttp3:okhttp-jvm")
+    implementation(platform("io.netty:netty-bom:$nettyVersion"))
 
     // Test
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
@@ -45,6 +47,7 @@ dependencies {
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("io.ktor:ktor-test-dispatcher-jvm:${ktorVersion}")
 }
 
 repositories {
