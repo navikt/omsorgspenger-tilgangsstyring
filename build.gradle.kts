@@ -6,7 +6,7 @@ val junitVersion = "6.1.0"
 val assertJVersion = "3.27.7"
 val mockkVersion = "1.14.9"
 val okhttpVersion = "5.3.2"
-val nettyVersion = "4.2.13.Final"
+val nettyVersion = "4.2.14.Final"
 
 val appMainClass = "no.nav.omsorgspenger.AppKt"
 
