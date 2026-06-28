@@ -74,7 +74,7 @@ internal class PdlClient(
     private fun URI.graphQl() = "$this/graphql"
 
     private fun Token.headers() = mapOf(
-            HttpHeaders.Authorization to cachedAccessTokenClient.getAccessToken(
+            HttpHeaders.Authorization to cachedAccessTokenClient.getOnBehalfOfAccessToken(
                 scopes = pdlScopes,
                 onBehalfOf = this.jwt.token
             ).asAuthoriationHeader()
@@ -86,7 +86,7 @@ internal class PdlClient(
     )
 
     private fun accessTokenCheck(navn: String, scopes: Set<String>) = kotlin.runCatching {
-        val accessTokenResponse = accessTokenClient.getAccessToken(scopes)
+        val accessTokenResponse = accessTokenClient.getClientCredentialsAccessToken(scopes)
         (SignedJWT.parse(accessTokenResponse.accessToken).jwtClaimsSet.getStringArrayClaim("roles")?.toList()
             ?: emptyList()).contains("access_as_application")
     }.fold(
