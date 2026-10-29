@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/sif-baseimages/java-25:2026.10.26.0916Z
+FROM ghcr.io/navikt/sif-baseimages/java-25:2026.10.29.0903Z
 LABEL org.opencontainers.image.source=https://github.com/navikt/omsorgspenger-tilgangsstyring
 
 COPY build/libs/app.jar /app/app.jar
