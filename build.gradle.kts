@@ -4,7 +4,7 @@ val dusseldorfVersion = "8.0.7"
 val ktorVersion = "3.4.2"
 val junitVersion = "6.1.3"
 val assertJVersion = "3.27.7"
-val mockkVersion = "1.14.11"
+val mockkVersion = "1.14.12"
 val okhttpVersion = "5.5.1"
 val nettyVersion = "4.2.20.Final"
 
