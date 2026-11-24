@@ -6,14 +6,14 @@ val junitVersion = "6.1.3"
 val assertJVersion = "3.27.7"
 val mockkVersion = "1.14.12"
 val okhttpVersion = "5.5.1"
-val nettyVersion = "4.2.20.Final"
+val nettyVersion = "4.2.21.Final"
 
 val appMainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "2.4.21"
     id("com.gradleup.shadow") version "9.6.1"
-    id("org.sonarqube") version "7.5.0.8588"
+    id("org.sonarqube") version "7.6.0.18749"
     jacoco
 }
 
